@@ -2,6 +2,8 @@
 <html>
 <head>
  <title>Software Requirement Chatbot</title>
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
  <style>
   tml {
   background: #CCD0D4;
@@ -70,7 +72,7 @@ h1.loader {
 }
 
  .chatbox {
- width: 400px;
+ width: 1000px;
  height: 500px;
  border: 1px solid #ccc;
  overflow-y: scroll;
@@ -105,8 +107,12 @@ h1.loader {
  <h1>Software Requirement Chatbot</h1>
  <div class="chatbox" id="chatbox">
 
- <div class="bot-message">Bot: Hello! How can I assist you with your software 
+ <div class="bot-message  text-dark">Bot: Hello! How can I assist you with your software 
 requirements?</div>
+<br><br><div id="user-question" class="bot-message  text-success" style="text-align: right">
+
+
+</div>
 <div class="bot-message" id="bot_msg">
 
 
@@ -132,6 +138,8 @@ requirements?</div>
  const sendButton = document.getElementById("sendButton");
  // Event listener for send button click
  sendButton.addEventListener("click", function() {
+        $('#user-question').append( $('#userInput').val())
+        $('#user-question').attr('id', '');
         $('#loader').show();
         $('#sendButton').prop('disabled', true);
         var url = "{{ route('chat.with.bot') }}";
@@ -147,8 +155,9 @@ requirements?</div>
                 $('#loader').hide();
                 $('#sendButton').prop('disabled', false);
                 contant  = data.content 
-                $('#bot_msg').append('<br><br><br>Bot: ' + contant)
+                $('#bot_msg').append('<br><br>Bot: ' + contant + '<br><br><div id="user-question" class="bot-message text-success" style="text-align: right"></div>')
                 $('#sendButton').prop('disabled', false);
+                $('#userInput').val('')
             },
             error: function(error) {
                 $('#loader').hide();

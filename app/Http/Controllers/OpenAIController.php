@@ -89,21 +89,21 @@ class OpenAIController extends Controller
 
     // Get the question and content from the response
     $question = $request->input('user_input');
-    $content = $data['choices'][0]['message']['content'];
+    $contant = $data['choices'][0]['message']['content'];
 
     // Prepare the response data
     $responseData = [
         'question' => $question,
-        'content' => $content,
+        'content' => $contant,
     ];
 
     // Get the content from the response
-    $content = $data['choices'][0]['message']['content'];
+    $contant = $data['choices'][0]['message']['content'];
 
     // Generate PDF using Dompdf
     $dompdf = new Dompdf();
     $dompdf->loadHtml($question);
-    $dompdf->loadHtml($content);
+    $dompdf->loadHtml($contant);
     $dompdf->setPaper('A4');
     $dompdf->render();
     $pdfContent = $dompdf->output();

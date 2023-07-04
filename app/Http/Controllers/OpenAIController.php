@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Mail\Message;
+use Dompdf\Dompdf;
 
 use GuzzleHttp\Client;
 class OpenAIController extends Controller
@@ -86,18 +87,38 @@ class OpenAIController extends Controller
 
     $data['choices'][0]['message']['content'] = nl2br($contant);
 
+    // Get the question and content from the response
+    $question = $request->input('user_input');
     $content = $data['choices'][0]['message']['content'];
 
-    // Prepare the email data
-    $to = 'athirachinu378@gmail.com'; // Set the recipient email address
-    $subject = 'Bot Data'; // Set the email subject
-    $body = $content; // Set the email body as the content
+    // Prepare the response data
+    $responseData = [
+        'question' => $question,
+        'content' => $content,
+    ];
 
-    // Send the email
-    Mail::raw($body, function (Message $message) use ($to, $subject) {
-        $message->to($to)
-            ->subject($subject);
+    // Get the content from the response
+    $content = $data['choices'][0]['message']['content'];
+
+    // Generate PDF using Dompdf
+    $dompdf = new Dompdf();
+    $dompdf->loadHtml($question);
+    $dompdf->loadHtml($content);
+    $dompdf->setPaper('A4');
+    $dompdf->render();
+    $pdfContent = $dompdf->output();
+
+    // Send the PDF as an email attachment
+    $recipient = 'athirachinu378@gmail.com'; // Set the recipient email address
+    $subject = 'Bot Data'; // Set the email subject
+    $fileName = 'bot_data.pdf'; // Set the filename for the PDF attachment
+
+    Mail::raw('Please find attached the Bot Data PDF.', function (Message $message) use ($recipient, $subject, $pdfContent, $fileName) {
+        $message->to($recipient)
+            ->subject($subject)
+            ->attachData($pdfContent, $fileName, ['mime' => 'application/pdf']);
     });
+
 
 
     return response()->json($data['choices'][0]['message'], 200, [], JSON_PRETTY_PRINT);

@@ -5,6 +5,7 @@
 </head>
 <body>
     <h1>Bot Data</h1>
+    <h2>{{ $question }}
     <p>{{ $content }}</p>
 </body>
 </html>

@@ -22,10 +22,10 @@ class OpenAIController extends Controller
     public function index()
     {
        
-        if (Auth::check()) {
+        //if (Auth::check()) {
             return view('chatWindow');
-        }
-        return redirect("login")->withSuccess('Opps! You do not have access');
+        //}
+       // return redirect("login")->withSuccess('Opps! You do not have access');
     }
 
     public function botData(Request $request): JsonResponse

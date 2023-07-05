@@ -22,6 +22,7 @@ class PdfController extends Controller
     $pdf->Cell(0, 10, 'Content: '.$content, 0, 1);
     $pdfContent = $pdf->Output('SRS.pdf', 'S');
 
+    
     return $pdfContent;
 }
 

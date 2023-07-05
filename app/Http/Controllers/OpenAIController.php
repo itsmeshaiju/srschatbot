@@ -16,6 +16,7 @@ use Dompdf\Dompdf;
 use App\Mail\BotDataMail;
 use PhpOffice\PhpWord\IOFactory;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\MailController;
 
 class OpenAIController extends Controller
 {
@@ -101,17 +102,10 @@ class OpenAIController extends Controller
     $pdfController = new PdfController();
     $pdfContent = $pdfController->generatePDF($data);
     
-
-    // Send the PDF as an email attachment
-    $recipient = 'sinfolitz@gmail.com'; // Set the recipient email address
-    $subject = 'SRS Document'; // Set the email subject
-    $fileName = 'SRS.pdf'; // Set the filename for the PDF attachment
+    $mailController = new MailController();
+    $mailController->sendMail($data);
     
-    Mail::raw('Please find attached the SRS PDF.', function (Message $message) use ($recipient, $subject, $pdfContent, $fileName) {
-        $message->to($recipient)
-            ->subject($subject)
-            ->attachData($pdfContent, $fileName, ['mime' => 'application/pdf']);
-    });
+    
     
 
         return response()->json($data['choices'][0]['message'], 200, array(), JSON_PRETTY_PRINT);

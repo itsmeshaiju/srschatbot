@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Article;
+// use Illuminate\Http\Request;
+// use App\Models;
 use TCPDF;
-use App\Http\Controllers\OpenAIController;
+// use Dompdf\Dompdf;
+// use App\Http\Controllers\OpenAIController;
 
 class PdfController extends Controller
 {
-    public function generatePDF($questions)
-    {
-      $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-  
-      // Set PDF content
-      $pdf->SetMargins(15, 15, 15);
-      $pdf->AddPage();
-      $pdf->SetFont('helvetica', '', 12);
-      $pdf->Cell(0, 10, 'Message: '.$questions->question_name, 0, 1);
-      $pdf->Cell(0, 10, 'Content: '.$questions->content, 0, 1);
-  
-      // Output the PDF as a string
-      return $pdf->Output('questions.pdf', 'S');
-    }
+    public function generatePDF($data)
+{
+    $content = $data['choices'][0]['message']['content'];
+
+    // Generate PDF using TCPDF
+    $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+    $pdf->SetMargins(15, 15, 15);
+    $pdf->AddPage();
+    $pdf->SetFont('helvetica', '', 12);
+    $pdf->Cell(0, 10, 'Content: '.$content, 0, 1);
+    $pdfContent = $pdf->Output('SRS.pdf', 'S');
+
+    return $pdfContent;
+}
+
+
 }

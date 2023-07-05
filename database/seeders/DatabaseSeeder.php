@@ -30,7 +30,17 @@ class DatabaseSeeder extends Seeder
 
          Question::create([
             'cat_id'=>1,
-            'question_name'=>'What is the purpose of the web application?',
+            'question_name'=>'What is the purpose of the application?',
+         ]);
+
+         Question::create([
+            'cat_id'=>1,
+            'question_name'=>'Do you have any technology preferences?',
+         ]);
+
+         Question::create([
+            'cat_id'=>1,
+            'question_name'=>'What is the purpose of the application?',
          ]);
 
          Question::create([

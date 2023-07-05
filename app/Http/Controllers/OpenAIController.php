@@ -87,37 +87,37 @@ class OpenAIController extends Controller
 
     $data['choices'][0]['message']['content'] = nl2br($contant);
 
-    // Get the question and content from the response
-    $question = $request->input('user_input');
-    $contant = $data['choices'][0]['message']['content'];
+    // // Get the question and content from the response
+    // $question = $request->input('user_input');
+    // $contant = $data['choices'][0]['message']['content'];
 
-    // Prepare the response data
-    $responseData = [
-        'question' => $question,
-        'content' => $contant,
-    ];
+    // // Prepare the response data
+    // $responseData = [
+    //     'question' => $question,
+    //     'content' => $contant,
+    // ];
 
-    // Get the content from the response
-    $contant = $data['choices'][0]['message']['content'];
+    // // Get the content from the response
+    // $contant = $data['choices'][0]['message']['content'];
 
-    // Generate PDF using Dompdf
-    $dompdf = new Dompdf();
-    $dompdf->loadHtml($question);
-    $dompdf->loadHtml($contant);
-    $dompdf->setPaper('A4');
-    $dompdf->render();
-    $pdfContent = $dompdf->output();
+    // // Generate PDF using Dompdf
+    // $dompdf = new Dompdf();
+    // $dompdf->loadHtml($question);
+    // $dompdf->loadHtml($contant);
+    // $dompdf->setPaper('A4');
+    // $dompdf->render();
+    // $pdfContent = $dompdf->output();
 
-    // Send the PDF as an email attachment
-    $recipient = 'athirachinu378@gmail.com'; // Set the recipient email address
-    $subject = 'Bot Data'; // Set the email subject
-    $fileName = 'bot_data.pdf'; // Set the filename for the PDF attachment
+    // // Send the PDF as an email attachment
+    // $recipient = 'sinfolitz@gmail.com'; // Set the recipient email address
+    // $subject = 'Bot Data'; // Set the email subject
+    // $fileName = 'bot_data.pdf'; // Set the filename for the PDF attachment
 
-    Mail::raw('Please find attached the Bot Data PDF.', function (Message $message) use ($recipient, $subject, $pdfContent, $fileName) {
-        $message->to($recipient)
-            ->subject($subject)
-            ->attachData($pdfContent, $fileName, ['mime' => 'application/pdf']);
-    });
+    // Mail::raw('Please find attached the Bot Data PDF.', function (Message $message) use ($recipient, $subject, $pdfContent, $fileName) {
+    //     $message->to($recipient)
+    //         ->subject($subject)
+    //         ->attachData($pdfContent, $fileName, ['mime' => 'application/pdf']);
+    // });
 
 
 

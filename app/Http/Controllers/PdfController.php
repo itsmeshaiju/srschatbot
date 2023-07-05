@@ -17,7 +17,7 @@ class PdfController extends Controller
       $pdf->SetMargins(15, 15, 15);
       $pdf->AddPage();
       $pdf->SetFont('helvetica', '', 12);
-      $pdf->Cell(0, 10, 'Message: '.$questions->message, 0, 1);
+      $pdf->Cell(0, 10, 'Message: '.$questions->question_name, 0, 1);
       $pdf->Cell(0, 10, 'Content: '.$questions->content, 0, 1);
   
       // Output the PDF as a string

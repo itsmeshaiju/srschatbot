@@ -13,6 +13,7 @@ use Dompdf\Dompdf;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use App\Models\gptQuestionAnswer;
+use App\Mail\BotDataMail;
 
 class OpenAIController extends Controller
 {
@@ -95,14 +96,13 @@ class OpenAIController extends Controller
 
         $data['choices'][0]['message']['content'] = nl2br($content);
 
-          //Generate PDF
-
+          // Generate PDF
         $questions = Question::find($questions->id);
         $pdfController = new PdfController();
         $pdf = $pdfController->generatePDF($questions);
 
-      // Send email with PDF attachment
-      Mail::to('sinfolitz@gmail.com')->send(new BotDataMail($questions, $pdf));
+        // Send email with PDF attachment
+        Mail::to('sinfolitz@gmail.com')->send(new BotDataMail($questions, $pdf));
 
         return response()->json($data['choices'][0]['message'], 200, array(), JSON_PRETTY_PRINT);
     }

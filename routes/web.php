@@ -14,12 +14,12 @@ use App\Http\Controllers\Auth\AuthController;
 |
 */
 //Auth
-Route::get('login', [AuthController::class, 'index'])->name('login');
+Route::get('login', [AuthController::class, 'index'])->name('login')->middleware('guest');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post'); 
-Route::get('registration', [AuthController::class, 'registration'])->name('register');
+Route::get('registration', [AuthController::class, 'registration'])->name('register')->middleware('guest');
 Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post'); 
-Route::get('dashboard', [AuthController::class, 'dashboard']); 
-Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('dashboard', [AuthController::class, 'dashboard'])->middleware('auth');
+Route::get('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 //Open ai
-Route::get('/', [OpenAIController::class, 'index'])->name('index');
-Route::post('chat-with-bot', [OpenAIController::class, 'botData'])->name('chat.with.bot');
+Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('auth');
+Route::post('chat-with-bot', [OpenAIController::class, 'botData'])->name('chat.with.bot')->middleware('auth');

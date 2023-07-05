@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cat_id')->constrained()->onDelete('cascade');
-            $table->string('question_name',250);
+            $table->text('question_name');
             $table->boolean('status')->default(1)->comment('1:enabled,0:disabled');
             $table->timestamps();
         });

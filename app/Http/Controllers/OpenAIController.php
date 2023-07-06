@@ -29,6 +29,7 @@ class OpenAIController extends Controller
     public function index()
     {
        
+       
         if (Auth::check()) {
             return view('chatWindow');
         }
@@ -99,11 +100,13 @@ class OpenAIController extends Controller
           //Athira
     //       // Get the question and content from the response
     
+    $name = "SRSDocument_" . date("ymdhis") . '.pdf';
+
     $pdfController = new PdfController();
-    $pdfContent = $pdfController->generatePDF($data);
-    
+    $pdfContent = $pdfController->generatePDF($data,$name);
+
     $mailController = new MailController();
-    $mailController->sendMail($data);
+    $mailController->sendMail($data,$pdfContent);
     
     
     

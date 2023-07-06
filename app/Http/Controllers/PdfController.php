@@ -10,7 +10,7 @@ use TCPDF;
 
 class PdfController extends Controller
 {
-    public function generatePDF($data)
+    public function generatePDF($data, $pdf_name)
 {
     $content = $data['choices'][0]['message']['content'];
 
@@ -20,7 +20,8 @@ class PdfController extends Controller
     $pdf->AddPage();
     $pdf->SetFont('helvetica', '', 12);
     $pdf->Cell(0, 10, 'Content: '.$content, 0, 1);
-    $pdfContent = $pdf->Output('SRS.pdf', 'S');
+    $pdfContent = public_path($pdf_name);
+    $pdf->Output($pdfContent, 'F');
 
     
     return $pdfContent;

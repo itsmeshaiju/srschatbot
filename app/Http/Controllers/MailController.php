@@ -13,7 +13,6 @@ class MailController extends Controller
 {
     
     $user = auth::user();
-    dd($user);
     $recipient = 'sinfolitz@gmail.com'; // Set the recipient email address
     $subject = 'SRS Document'; // Set the email subject
     $filePath = $pdf_name; // Set the filename for the PDF attachment

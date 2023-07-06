@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Auth;
 class MailController extends Controller
 {
 
-    public function sendMail($data,$pdf_name)
+    public function sendMail($pdf_name)
 {
     
 
-    $recipient = 'sinfolitz@gmail.com'; // Set the recipient email address
+    $recipient = auth()->user()->email; // Set the recipient email address
     $subject = 'SRS Document'; // Set the email subject
     $filePath = $pdf_name; // Set the filename for the PDF attachment
     // $pdfContent = 'Please find the attached SRS PDF.'; // Replace this with the actual content of the PDF

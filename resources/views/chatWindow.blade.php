@@ -134,13 +134,17 @@ requirements?</div>
  <div class="input-container">
 
  <input type="text" id="userInput" class="input-field" placeholder="Enter your message...">
- <button id="sendButton" class="send-button">Send</button>
+ 
  </div>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
  <script>
  const sendButton = document.getElementById("sendButton");
  // Event listener for send button click
- sendButton.addEventListener("click", function() {
+ $("#userInput").on('keyup', function (e) {
+  
+  if (e.key === 'Enter' || e.keyCode === 13) {
+       
+    
         var qt_count =  $('#qt_count').val()
         $('#user-answer').append( $('#userInput').val())
         $('#user-answer').attr('id', '');
@@ -177,6 +181,7 @@ requirements?</div>
                 console.log(data)
             }
         });
+      }
  });
  
  </script>

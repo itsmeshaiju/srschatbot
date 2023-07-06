@@ -12,97 +12,97 @@ class PdfController extends Controller
 {
     public function generatePDF($data, $pdf_name)
 {
-    // $content = $data['choices'][0]['message']['content'];
-    $content = 'Software Requirements Specification (SRS) Document
+    $content = $data['choices'][0]['message']['content'];
+    // $content = 'Software Requirements Specification (SRS) Document
     
-              E-commerce Application - Magento
-    
-    
-              1. Introduction
-    
-                 1.1 Purpose
-    
-                 The purpose of this document is to provide a detailed description of the requirements for an e-commerce application based on the Magento platform.
+    //           E-commerce Application - Magento
     
     
-                 1.2 Scope
+    //           1. Introduction
     
-                 This application aims to provide a robust and user-friendly e-commerce platform using the Magento framework. It will allow users to browse and purchase products, manage their accounts, and provide an administrative interface for managing products, orders, and customer data.
+    //              1.1 Purpose
     
-    
-                 1.3 Definitions, Acronyms, and Abbreviations
-    
-                 - SRS: Software Requirements Specification
+    //              The purpose of this document is to provide a detailed description of the requirements for an e-commerce application based on the Magento platform.
     
     
-              2. Overall Description
+    //              1.2 Scope
     
-                 2.1 Product Perspective
-    
-                 The e-commerce application will be built on top of the Magento platform which provides a scalable and customizable foundation for online stores. It will integrate with various payment gateways and shipping providers to facilitate secure transactions and efficient order fulfillment.
+    //              This application aims to provide a robust and user-friendly e-commerce platform using the Magento framework. It will allow users to browse and purchase products, manage their accounts, and provide an administrative interface for managing products, orders, and customer data.
     
     
-                 2.2 Product Features
-                 Software Requirements Specification (SRS) Document
+    //              1.3 Definitions, Acronyms, and Abbreviations
     
-              E-commerce Application - Magento
-    
-    
-              1. Introduction
-    
-                 1.1 Purpose
-    
-                 The purpose of this document is to provide a detailed description of the requirements for an e-commerce application based on the Magento platform.
+    //              - SRS: Software Requirements Specification
     
     
-                 1.2 Scope
+    //           2. Overall Description
     
-                 This application aims to provide a robust and user-friendly e-commerce platform using the Magento framework. It will allow users to browse and purchase products, manage their accounts, and provide an administrative interface for managing products, orders, and customer data.
+    //              2.1 Product Perspective
     
-    
-                 1.3 Definitions, Acronyms, and Abbreviations
-    
-                 - SRS: Software Requirements Specification
+    //              The e-commerce application will be built on top of the Magento platform which provides a scalable and customizable foundation for online stores. It will integrate with various payment gateways and shipping providers to facilitate secure transactions and efficient order fulfillment.
     
     
-              2. Overall Description
+    //              2.2 Product Features
+    //              Software Requirements Specification (SRS) Document
     
-                 2.1 Product Perspective
-    
-                 The e-commerce application will be built on top of the Magento platform which provides a scalable and customizable foundation for online stores. It will integrate with various payment gateways and shipping providers to facilitate secure transactions and efficient order fulfillment.
-    
-    
-                 2.2 Product Features
-                 Software Requirements Specification (SRS) Document
-    
-              E-commerce Application - Magento
+    //           E-commerce Application - Magento
     
     
-              1. Introduction
+    //           1. Introduction
     
-                 1.1 Purpose
+    //              1.1 Purpose
     
-                 The purpose of this document is to provide a detailed description of the requirements for an e-commerce application based on the Magento platform.
-    
-    
-                 1.2 Scope
-    
-                 This application aims to provide a robust and user-friendly e-commerce platform using the Magento framework. It will allow users to browse and purchase products, manage their accounts, and provide an administrative interface for managing products, orders, and customer data.
+    //              The purpose of this document is to provide a detailed description of the requirements for an e-commerce application based on the Magento platform.
     
     
-                 1.3 Definitions, Acronyms, and Abbreviations
+    //              1.2 Scope
     
-                 - SRS: Software Requirements Specification
-    
-    
-              2. Overall Description
-    
-                 2.1 Product Perspective
-    
-                 The e-commerce application will be built on top of the Magento platform which provides a scalable and customizable foundation for online stores. It will integrate with various payment gateways and shipping providers to facilitate secure transactions and efficient order fulfillment.
+    //              This application aims to provide a robust and user-friendly e-commerce platform using the Magento framework. It will allow users to browse and purchase products, manage their accounts, and provide an administrative interface for managing products, orders, and customer data.
     
     
-                 2.2 Product Features';
+    //              1.3 Definitions, Acronyms, and Abbreviations
+    
+    //              - SRS: Software Requirements Specification
+    
+    
+    //           2. Overall Description
+    
+    //              2.1 Product Perspective
+    
+    //              The e-commerce application will be built on top of the Magento platform which provides a scalable and customizable foundation for online stores. It will integrate with various payment gateways and shipping providers to facilitate secure transactions and efficient order fulfillment.
+    
+    
+    //              2.2 Product Features
+    //              Software Requirements Specification (SRS) Document
+    
+    //           E-commerce Application - Magento
+    
+    
+    //           1. Introduction
+    
+    //              1.1 Purpose
+    
+    //              The purpose of this document is to provide a detailed description of the requirements for an e-commerce application based on the Magento platform.
+    
+    
+    //              1.2 Scope
+    
+    //              This application aims to provide a robust and user-friendly e-commerce platform using the Magento framework. It will allow users to browse and purchase products, manage their accounts, and provide an administrative interface for managing products, orders, and customer data.
+    
+    
+    //              1.3 Definitions, Acronyms, and Abbreviations
+    
+    //              - SRS: Software Requirements Specification
+    
+    
+    //           2. Overall Description
+    
+    //              2.1 Product Perspective
+    
+    //              The e-commerce application will be built on top of the Magento platform which provides a scalable and customizable foundation for online stores. It will integrate with various payment gateways and shipping providers to facilitate secure transactions and efficient order fulfillment.
+    
+    
+    //              2.2 Product Features';
 
     // Generate PDF using TCPDF
     $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);

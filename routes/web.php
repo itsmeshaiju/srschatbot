@@ -23,3 +23,5 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout')->middlew
 //Open ai
 Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('auth');
 Route::post('chat-with-bot', [OpenAIController::class, 'botData'])->name('chat.with.bot')->middleware('auth');
+Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');
+

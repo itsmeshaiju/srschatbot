@@ -1,6 +1,10 @@
 <?php
 
+
+
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Http;
@@ -12,6 +16,9 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\gptQuestionAnswer;
+use App\Models\Question;
+
+$data_list = [];
 
 use Illuminate\Support\Facades\Mail;
 
@@ -30,7 +37,6 @@ use App\Http\Controllers\MailController;
 class OpenAIController extends Controller
 
 {
-
     /**
 
      * Write code on Method
@@ -41,26 +47,84 @@ class OpenAIController extends Controller
 
      */
 
-    public function index()
-
+    public function index(Request $request)
     {
 
-       
-        if (Auth::check()) {
-
-            return view('chatWindow');
-
-        }
-
-        return redirect("login")->withSuccess('Opps! You do not have access');
-
+        return view('chatWindow');
     }
 
-    public function botData(Request $request): JsonResponse
 
+
+    public function getQuestions(Request $request)
     {
 
-        $search = $request->user_input;
+
+        $qt_count = Question::count();
+
+        if ($request->qt_count == $qt_count) {
+
+            $question = [
+
+                'question_name' => 'can we procceed ?',
+                'id' => 0
+            ];
+
+            return response()->json($question, 200, array(), JSON_PRETTY_PRINT);
+        }
+        if (isset($request->q_id) && $request->q_id == 0) {
+
+            $bot_data   =  $this->botData();
+            return $bot_data;
+        }
+        if (isset($request->q_id) && $request->q_id == 'send_mail') {
+
+
+            $name = "SRSDocument_" . date("ymdhis") . '.pdf';
+
+            $pdfController = new PdfController();
+            $pdfContent = $pdfController->generatePDF($name);
+
+            $mailController = new MailController();
+            $mailController->sendMail($pdfContent);
+        }
+
+        $id = (isset($request->q_id) ? $request->q_id  : 0);
+
+        $question = Question::select('id', 'question_name')->where('id', '>', $id)->orderBy('id')->first();
+
+        $data = [
+            'answer' => $request->user_input,
+            'question' => $question->question_name
+
+        ];
+        $json_data = json_encode($data);
+
+        gptQuestionAnswer::create([
+            'question_and_answer' => $json_data,
+            'user_id' => auth()->user()->id,
+
+        ]);
+
+
+        return response()->json($question, 200, array(), JSON_PRETTY_PRINT);
+    }
+
+    public function botData(): JsonResponse
+    {
+
+        $qt_array = gptQuestionAnswer::select('question_and_answer')->where('user_id', auth()->user()->id)->orderBy('id')->get();
+
+
+        $contant = "";
+
+
+        foreach ($qt_array as $data) {
+            $data = json_decode($data->question_and_answer, TRUE);
+
+            $contant .= $data['question'] . ' ' . $data['answer'];
+        }
+
+        $contant .= '  create srs document';
 
         $client = new Client([
 
@@ -71,7 +135,7 @@ class OpenAIController extends Controller
             ]
 
         ]);
-
+       
         $response = $client->post("https://api.openai.com/v1/chat/completions", [
 
             'headers' => [
@@ -91,8 +155,7 @@ class OpenAIController extends Controller
                     [
 
                         "role" => "user",
-
-                        "content" => $search
+                        "content" => $contant
 
                     ]
 
@@ -114,21 +177,27 @@ class OpenAIController extends Controller
 
         ]);
 
+
+
+
         $data = json_decode($response->getBody(), true);
 
         $content = $data['choices'][0]['message']['content'];
 
         $data = [
 
-            'question' => $request->user_input,
+            'question' => 'create srs document',
 
             'answer' => $content
 
-           
+
 
         ];
 
         $json_data = json_encode($data);
+
+
+
 
         gptQuestionAnswer::create([
 
@@ -136,9 +205,12 @@ class OpenAIController extends Controller
 
             'user_id' => auth()->user()->id,
 
-           
 
-          ]);
+
+        ]);
+
+
+
 
         // $modifiedString = str_replace($wordToFind, $wordToFind . " " . $stringToInsert, $originalString);
 
@@ -150,29 +222,11 @@ class OpenAIController extends Controller
 
         $data['choices'][0]['message']['content'] = nl2br($content);
 
-          //Athira
+        $question = [
+            'question_name' => $data['choices'][0]['message']['content'] . '<br> can we send via mail in your registered mail ?',
+            'id' => 'send_mail'
+        ];
 
-    //       // Get the question and content from the response
-
-   
-
-    $name = "SRSDocument_" . date("ymdhis") . '.pdf';
-
-    $pdfController = new PdfController();
-
-    $pdfContent = $pdfController->generatePDF($data,$name);
-
-    $mailController = new MailController();
-
-    $mailController->sendMail($data,$pdfContent);
-
-        return response()->json($data['choices'][0]['message'], 200, array(), JSON_PRETTY_PRINT);
-
+        return response()->json($question, 200, array(), JSON_PRETTY_PRINT);
     }
-
-
-
-
-   
-
 }

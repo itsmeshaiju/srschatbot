@@ -110,7 +110,9 @@ h1.loader {
 
  <div class="bot-message  text-dark">Bot: Hello! How can I assist you with your software 
 requirements?</div>
-<br><br><div id="user-question" class="bot-message  text-success" style="text-align: right">
+<br><br><div id="user-answer" class="bot-message  text-success" style="text-align: right">
+<input type="hidden" id="q_id" value="">
+<input type="hidden" id="qt_count" value="0">
 
 
 </div>
@@ -132,33 +134,46 @@ requirements?</div>
  <div class="input-container">
 
  <input type="text" id="userInput" class="input-field" placeholder="Enter your message...">
- <button id="sendButton" class="send-button">Send</button>
+ 
  </div>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
  <script>
  const sendButton = document.getElementById("sendButton");
  // Event listener for send button click
- sendButton.addEventListener("click", function() {
-        $('#user-question').append( $('#userInput').val())
-        $('#user-question').attr('id', '');
+ $("#userInput").on('keyup', function (e) {
+  
+  if (e.key === 'Enter' || e.keyCode === 13) {
+       
+    
+        var qt_count =  $('#qt_count').val()
+        $('#user-answer').append( $('#userInput').val())
+        $('#user-answer').attr('id', '');
         $('#loader').show();
         $('#sendButton').prop('disabled', true);
-        var url = "{{ route('chat.with.bot') }}";
+        var url = "{{ route('get.question') }}";
         $.ajax({
             url: url,
             method: "POST",
             data: {
                 _token: '{{ csrf_token() }}',
                 'user_input': $('#userInput').val(),
+                'q_id' : $('#q_id').val(),
+                'qt_count' : qt_count,
+                
+
                 
             },
             cache: true,
             success: function(data) {
+              new_count = parseInt(qt_count) + 1
                 $('#loader').hide();
                 $('#sendButton').prop('disabled', false);
-                contant  = data.content 
-                $('#bot_msg').append('<br><br>Bot: ' + contant + '<br><br><div id="user-question" class="bot-message text-success" style="text-align: right"></div>')
+                contant  = data['question_name']
+                q_id = data['id']
+                $('#bot_msg').append('<br><br>Bot: ' + contant + '<br><br><div id="user-answer" class="bot-message text-success" style="text-align: right"></div>')
                 $('#sendButton').prop('disabled', false);
+                $('#q_id').val(q_id)
+                $('#qt_count').val(new_count)
                 $('#userInput').val('')
             },
             error: function(error) {
@@ -166,6 +181,7 @@ requirements?</div>
                 console.log(data)
             }
         });
+      }
  });
  
  </script>

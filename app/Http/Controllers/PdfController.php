@@ -21,7 +21,7 @@ $data = json_decode($data['question_and_answer'], TRUE);
     $pdf->SetMargins(15, 15, 15);
     $pdf->AddPage();
     $pdf->SetFont('helvetica', '', 12);
-    $pdf->Cell(0, 10, 'Content: '.$content, 0, 1);
+    $pdf->MultiCell(0, 10, 'Content: '.$content, 0, 1);
     $pdfContent = public_path($pdf_name);
     $pdf->Output($pdfContent, 'F');
 

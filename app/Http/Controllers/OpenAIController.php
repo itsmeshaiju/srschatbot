@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
@@ -117,9 +114,6 @@ class OpenAIController extends Controller
 
         ]);
 
-
-
-
         $data = json_decode($response->getBody(), true);
 
         $content = $data['choices'][0]['message']['content'];
@@ -136,9 +130,6 @@ class OpenAIController extends Controller
 
         $json_data = json_encode($data);
 
-
-
-
         gptQuestionAnswer::create([
 
             'question_and_answer' => $json_data,
@@ -149,9 +140,6 @@ class OpenAIController extends Controller
 
           ]);
 
-
-
-
         // $modifiedString = str_replace($wordToFind, $wordToFind . " " . $stringToInsert, $originalString);
 
         // $modifiedString = str_replace($wordToFind, $wordToFind . " " . $stringToInsert, $originalString);
@@ -159,9 +147,6 @@ class OpenAIController extends Controller
         // substr_replace($oldstr, $str_to_insert, $pos, 0);
 
         $content = str_replace('```', " ", $content);
-
-
-
 
         $data['choices'][0]['message']['content'] = nl2br($content);
 
@@ -173,28 +158,13 @@ class OpenAIController extends Controller
 
     $name = "SRSDocument_" . date("ymdhis") . '.pdf';
 
-
-
-
     $pdfController = new PdfController();
 
     $pdfContent = $pdfController->generatePDF($data,$name);
 
-
-
-
     $mailController = new MailController();
 
     $mailController->sendMail($data,$pdfContent);
-
-   
-
-   
-
-   
-
-
-
 
         return response()->json($data['choices'][0]['message'], 200, array(), JSON_PRETTY_PRINT);
 

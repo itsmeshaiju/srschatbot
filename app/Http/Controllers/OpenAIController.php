@@ -1,37 +1,19 @@
 <?php
-
-
-
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Http;
-
 use Illuminate\Http\JsonResponse;
-
 use GuzzleHttp\Client;
-
 use Illuminate\Support\Facades\Auth;
-
 use App\Models\gptQuestionAnswer;
 use App\Models\Question;
-
 $data_list = [];
-
 use Illuminate\Support\Facades\Mail;
-
 use Illuminate\Mail\Message;
-
 use Dompdf\Dompdf;
-
 use App\Mail\BotDataMail;
-
 use PhpOffice\PhpWord\IOFactory;
-
 use App\Http\Controllers\PdfController;
-
 use App\Http\Controllers\MailController;
 
 class OpenAIController extends Controller
@@ -52,13 +34,8 @@ class OpenAIController extends Controller
 
         return view('chatWindow');
     }
-
-
-
     public function getQuestions(Request $request)
     {
-
-
         $qt_count = Question::count();
 
         if ($request->qt_count == $qt_count) {
@@ -177,9 +154,6 @@ class OpenAIController extends Controller
 
         ]);
 
-
-
-
         $data = json_decode($response->getBody(), true);
 
         $content = $data['choices'][0]['message']['content'];
@@ -189,28 +163,16 @@ class OpenAIController extends Controller
             'question' => 'create srs document',
 
             'answer' => $content
-
-
-
         ];
 
         $json_data = json_encode($data);
-
-
-
 
         gptQuestionAnswer::create([
 
             'question_and_answer' => $json_data,
 
             'user_id' => auth()->user()->id,
-
-
-
         ]);
-
-
-
 
         // $modifiedString = str_replace($wordToFind, $wordToFind . " " . $stringToInsert, $originalString);
 

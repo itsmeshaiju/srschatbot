@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class MailController extends Controller
 {
 
-    public function sendMail($pdf_name)
+    public function sendMail($pdf_name, $tomail = false)
 {
     
 

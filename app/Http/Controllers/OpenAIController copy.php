@@ -10,39 +10,89 @@ use Illuminate\Http\JsonResponse;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use App\Models\gptQuestionAnswer;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Mail\Message;
-use Dompdf\Dompdf;
-use App\Mail\BotDataMail;
-use PhpOffice\PhpWord\IOFactory;
-use App\Http\Controllers\PdfController;
-use App\Http\Controllers\MailController;
+use App\Models\Question;
+
+$data_list = [];
 
 class OpenAIController extends Controller
 {
+    
     /**
      * Write code on Method
      *
      * @return response(request )
      */
+  
 
-    public function index()
+    public function index(Request $request)
     {
+
+        return view('chatWindow');
+        
+    }
+    
+
+
+    public function getQuestions(Request $request){
+
        
-       
-        if (Auth::check()) {
-            return view('chatWindow');
+        $qt_count = Question::count();
+
+        if ($request->qt_count == $qt_count){
+
+            $question = [
+
+                'question_name' => 'can i procceed',
+                'id' => 0
+            ];
+
+            return response()->json($question, 200, array(), JSON_PRETTY_PRINT); 
         }
-        return redirect("login")->withSuccess('Opps! You do not have access');
+         if (isset( $request->q_id) && $request->q_id == 0){
+
+           $bot_data   =  $this->botData();
+           return $bot_data;
+         }
+        $id = (isset($request->q_id) ?$request->q_id  : 0);
+
+        $question = Question::select('id','question_name')->where('id', '>', $id)->orderBy('id')->first();
+
+        $data = [
+            'answer' => $request->user_input,
+            'question' => $question->question_name
+            
+        ];
+        $json_data = json_encode($data);
+
+        gptQuestionAnswer::create([
+            'question_and_answer' => $json_data,
+            'user_id' => auth()->user()->id,
+            
+          ]);
+
+
+        return response()->json($question, 200, array(), JSON_PRETTY_PRINT);
+
+
+
+
     }
 
-    public function botData(Request $request): JsonResponse
+    public function botData(): JsonResponse
     {
 
+        $qt_array = gptQuestionAnswer::select('question_and_answer')->where('user_id', auth()->user()->id)->orderBy('id')->get();
 
-        $search = $request->user_input;
+        $contant = "";
 
-       
+        foreach ($qt_array as $data){
+            $data = json_decode($data->question_and_answer, TRUE);
+           
+            $contant .= $data['question'].' '.$data['answer'];
+
+        }
+
+       $contant .= '  create srs document';
         $client = new Client([
             'curl' => [
                 CURLOPT_CAINFO => base_path('resources/assets/cacert.pem')
@@ -59,7 +109,7 @@ class OpenAIController extends Controller
                 'messages' => [
                     [
                         "role" => "user",
-                        "content" => $search
+                        "content" => $contant
                     ]
                 ],
                 'temperature' => 0.5,
@@ -79,7 +129,7 @@ class OpenAIController extends Controller
 
         
         $data = [
-            'question' => $request->user_input,
+            'question' => 'create srs document',
             'answer' => $content
             
         ];
@@ -97,21 +147,16 @@ class OpenAIController extends Controller
         $content = str_replace('```', " ", $content);
 
         $data['choices'][0]['message']['content'] = nl2br($content);
-          //Athira
-    //       // Get the question and content from the response
-    
-    $name = "SRSDocument_" . date("ymdhis") . '.pdf';
 
-    $pdfController = new PdfController();
-    $pdfContent = $pdfController->generatePDF($data,$name);
+        $question = [
 
-    $mailController = new MailController();
-    $mailController->sendMail($data,$name);
-    
-    
-    
+            'question_name' => $data['choices'][0]['message']['content'] ,
+            'id' => 0
+        ];
 
-        return response()->json($data['choices'][0]['message'], 200, array(), JSON_PRETTY_PRINT);
+        return response()->json($question, 200, array(), JSON_PRETTY_PRINT); 
+
+        
     }
 
     

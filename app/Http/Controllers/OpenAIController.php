@@ -83,9 +83,16 @@ class OpenAIController extends Controller
 
             $pdfController = new PdfController();
             $pdfContent = $pdfController->generatePDF($name);
-
             $mailController = new MailController();
             $mailController->sendMail($pdfContent);
+            gptQuestionAnswer::where('user_id',auth()->user()->id)->delete();
+            $question = [
+                'question_name' => 'we will share you pdf shortly..have a nice day',
+                'id' => 'shared_mail'
+            ];
+
+            return response()->json($question, 200, array(), JSON_PRETTY_PRINT); 
+
         }
 
         $id = (isset($request->q_id) ? $request->q_id  : 0);
@@ -161,9 +168,12 @@ class OpenAIController extends Controller
 
                 ],
 
+                
                 'temperature' => 0.5,
 
                 "max_tokens" => 200,
+            //     'n' => 5, // Set the desired pagination count
+            // 'stop' => ['\n'],
 
                 "top_p" => 1.0,
 
@@ -175,12 +185,20 @@ class OpenAIController extends Controller
 
             ]
 
+            
+
         ]);
 
 
+        // $completion = json_decode($response->getBody()->getContents(), true);
 
+        // Get the pagination count from the completion
+        // $paginationCount = count($completion['choices']);
+
+      
 
         $data = json_decode($response->getBody(), true);
+        // dd($data);
 
         $content = $data['choices'][0]['message']['content'];
 

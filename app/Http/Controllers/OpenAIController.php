@@ -42,7 +42,7 @@ class OpenAIController extends Controller
 
             $question = [
 
-                'question_name' => 'can i procceed',
+                'question_name' => 'can we procceed ?',
                 'id' => 0
             ];
 
@@ -53,6 +53,12 @@ class OpenAIController extends Controller
            $bot_data   =  $this->botData();
            return $bot_data;
          }
+         if (isset( $request->q_id) && $request->q_id == 'send_mail'){
+            
+
+            //mail function here
+         }
+         
         $id = (isset($request->q_id) ?$request->q_id  : 0);
 
         $question = Question::select('id','question_name')->where('id', '>', $id)->orderBy('id')->first();
@@ -150,8 +156,8 @@ class OpenAIController extends Controller
 
         $question = [
 
-            'question_name' => $data['choices'][0]['message']['content'] ,
-            'id' => 0
+            'question_name' => $data['choices'][0]['message']['content'] .'<br> can we send via mail in your registered mail ?',
+            'id' => 'send_mail'
         ];
 
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT); 

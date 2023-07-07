@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 // use Illuminate\Http\Request;
@@ -9,27 +8,24 @@ use Illuminate\Support\Facades\Auth;
 class MailController extends Controller
 {
 
-    public function sendMail($pdf_name, $tomail = false)
-{
-    
+    public function sendMail($pdfName, $toMail = false)
+    {
+        $recipient = auth::user()->email; // Set the recipient email address
+        $subject = 'SRS Document'; // Set the email subject
+        $filePath = $pdfName; // Set the filepath for the PDF attachment
 
-    $recipient = auth::user()->email; // Set the recipient email address
-    $subject = 'SRS Document'; // Set the email subject
-    $filePath = $pdf_name; // Set the filename for the PDF attachment
-    // $pdfContent = 'Please find the attached SRS PDF.'; // Replace this with the actual content of the PDF
+        $mailMessage = 'Hi ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day !';
 
+        Mail::raw($mailMessage, function ($message) use ($recipient, $subject, $filePath, $pdfName)
+            {
+            $message->to($recipient) // Specify the recipient's email
+                ->subject($subject) // Specify the email subject 
+                ->attach($filePath, ['as' => $pdfName]); // Specify the file path of the PDF attachment
+        });
+        
 
-    Mail::raw('Please find the attached SRS PDF.', function ($message) use ($recipient, $subject, $filePath, $pdf_name) {
-       
-        $message->to($recipient) // Use the $recipient variable instead of 'recipient'
-            ->subject($subject) // Use the $subject variable instead of 'subject'
-            ->attach($filePath, ['as' => $pdf_name]); // Use the $fileName variable instead of $content['fileName']
-    });
-    
-
-    return 'Email sent with PDF attachment.';
-}
-
+        return 'Email sent with PDF attachment.';
+    }
 
 }
 

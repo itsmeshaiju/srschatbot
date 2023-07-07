@@ -15,14 +15,13 @@ class MailController extends Controller
 
     $recipient = auth::user()->email; // Set the recipient email address
     $subject = 'SRS Document'; // Set the email subject
-    $filePath = $pdfName; // Set the filename for the PDF attachment
-    // $pdfContent = 'Please find the attached SRS PDF.'; // Replace this with the actual content of the PDF
+    $filePath = $pdfName; // Set the filepath for the PDF attachment
 
-
-    Mail::raw('Hai ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day <span style="font-size: 24px; font-weight: bold;">!</span>' , function ($message) use ($recipient, $subject, $filePath, $pdfName) {
-        $message->to($recipient) // Use the $recipient variable instead of 'recipient'
-            ->subject($subject) // Use the $subject variable instead of 'subject'
-            ->attach($filePath, ['as' => $pdfName]); // Use the $fileName variable instead of $content['fileName']
+    Mail::raw('Hai ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day !' , function ($message) use ($recipient, $subject, $filePath, $pdfName) //The Mail::raw function sends the email.
+    {
+        $message->to($recipient) // Specify the recipient's email
+            ->subject($subject) // Specify the email subject 
+            ->attach($filePath, ['as' => $pdfName]); // Specify the file path of the PDF attachment
     });
     
 

@@ -19,8 +19,7 @@ class MailController extends Controller
     // $pdfContent = 'Please find the attached SRS PDF.'; // Replace this with the actual content of the PDF
 
 
-    Mail::raw('Hai, Please find the attached SRS PDF.', function ($message) use ($recipient, $subject, $filePath, $pdf_name) {
-       
+    Mail::raw('Hai ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day <span style="font-size: 24px; font-weight: bold;">!</span>' , function ($message) use ($recipient, $subject, $filePath, $pdfName) {
         $message->to($recipient) // Use the $recipient variable instead of 'recipient'
             ->subject($subject) // Use the $subject variable instead of 'subject'
             ->attach($filePath, ['as' => $pdfName]); // Use the $fileName variable instead of $content['fileName']

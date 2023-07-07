@@ -22,7 +22,7 @@ class PdfController extends Controller
         $pdf->AddPage();
         $pdf->SetFont('helvetica', '', 12);
         $pdf->MultiCell(0, 10, 'Content: '.$content, 0, 1);
-        $pdfContent = public_path($pdfName);
+        $pdfContent = public_path('SRSDoc/' . $pdfName);
         $pdf->Output($pdfContent, 'F');
 
         

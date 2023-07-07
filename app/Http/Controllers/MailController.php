@@ -9,21 +9,21 @@ use Illuminate\Support\Facades\Auth;
 class MailController extends Controller
 {
 
-    public function sendMail($pdf_name, $tomail = false)
+    public function sendMail($pdfName, $toMail = false)
 {
     
 
     $recipient = auth::user()->email; // Set the recipient email address
     $subject = 'SRS Document'; // Set the email subject
-    $filePath = $pdf_name; // Set the filename for the PDF attachment
+    $filePath = $pdfName; // Set the filename for the PDF attachment
     // $pdfContent = 'Please find the attached SRS PDF.'; // Replace this with the actual content of the PDF
 
 
-    Mail::raw('Please find the attached SRS PDF.', function ($message) use ($recipient, $subject, $filePath, $pdf_name) {
+    Mail::raw('Hai, Please find the attached SRS PDF.', function ($message) use ($recipient, $subject, $filePath, $pdf_name) {
        
         $message->to($recipient) // Use the $recipient variable instead of 'recipient'
             ->subject($subject) // Use the $subject variable instead of 'subject'
-            ->attach($filePath, ['as' => $pdf_name]); // Use the $fileName variable instead of $content['fileName']
+            ->attach($filePath, ['as' => $pdfName]); // Use the $fileName variable instead of $content['fileName']
     });
     
 

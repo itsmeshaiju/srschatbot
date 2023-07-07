@@ -1,68 +1,33 @@
 <?php
-
-
-
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Http;
-
 use Illuminate\Http\JsonResponse;
-
 use GuzzleHttp\Client;
-
 use Illuminate\Support\Facades\Auth;
-
 use App\Models\gptQuestionAnswer;
 use App\Models\Question;
-
-$data_list = [];
-
-use Illuminate\Support\Facades\Mail;
-
-use Illuminate\Mail\Message;
-
-use Dompdf\Dompdf;
-
-use App\Mail\BotDataMail;
-
-use PhpOffice\PhpWord\IOFactory;
-
 use App\Http\Controllers\PdfController;
-
 use App\Http\Controllers\MailController;
-
 class OpenAIController extends Controller
-
 {
-    /**
+    
 
-     * Write code on Method
-
-     *
-
-     * @return response(request )
-
-     */
-
+    // show chat window
     public function index(Request $request)
     {
-
         return view('chatWindow');
     }
 
 
 
+    //ajax request for getting questions
     public function getQuestions(Request $request)
     {
 
-
-        $qt_count = Question::count();
-
-        if ($request->qt_count == $qt_count) {
-
+        //this checking ask question count for is it last question or not
+        $qtCount = Question::count();
+        if ($request->qt_count == $qtCount) {
             $question = [
 
                 'question_name' => 'can we procceed ?',
@@ -71,11 +36,15 @@ class OpenAIController extends Controller
 
             return response()->json($question, 200, array(), JSON_PRETTY_PRINT);
         }
+
+        //this block for send contant to chatgpt
         if (isset($request->q_id) && $request->q_id == 0) {
 
-            $bot_data   =  $this->botData();
-            return $bot_data;
+            $botData   =  $this->botData();
+            return $botData;
         }
+
+        //this block for srs document convert to pdf and send via mail 
         if (isset($request->q_id) && $request->q_id == 'send_mail') {
 
 
@@ -85,16 +54,17 @@ class OpenAIController extends Controller
             $pdfContent = $pdfController->generatePDF($name);
             $mailController = new MailController();
             $mailController->sendMail($pdfContent);
-            gptQuestionAnswer::where('user_id',auth()->user()->id)->delete();
+            gptQuestionAnswer::where('user_id', auth()->user()->id)->delete();
             $question = [
                 'question_name' => 'we will share you pdf shortly..have a nice day',
                 'id' => 'shared_mail'
             ];
 
-            return response()->json($question, 200, array(), JSON_PRETTY_PRINT); 
-
+            return response()->json($question, 200, array(), JSON_PRETTY_PRINT);
         }
 
+        
+        //getting ask question based on id 
         $id = (isset($request->q_id) ? $request->q_id  : 0);
 
         $question = Question::select('id', 'question_name')->where('id', '>', $id)->orderBy('id')->first();
@@ -116,64 +86,47 @@ class OpenAIController extends Controller
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT);
     }
 
+
+
+
+    //chatgpt api function  
     public function botData(): JsonResponse
     {
-
-        $qt_array = gptQuestionAnswer::select('question_and_answer')->where('user_id', auth()->user()->id)->orderBy('id')->get();
-
-
-        $contant = "";
-
-
-        foreach ($qt_array as $data) {
+        $qtArray = gptQuestionAnswer::select('question_and_answer')->where('user_id', auth()->user()->id)->orderBy('id')->get();
+        $content = "";
+        foreach ($qtArray as $data) {
             $data = json_decode($data->question_and_answer, TRUE);
 
-            $contant .= $data['question'] . ' ' . $data['answer'];
+            $content .= $data['question'] . ' ' . $data['answer'];
         }
 
-        $contant .= '  create srs document';
-
+        $content .= '  create srs document';
         $client = new Client([
-
             'curl' => [
-
                 CURLOPT_CAINFO => base_path('resources/assets/cacert.pem')
-
             ]
-
         ]);
-       
+
         $response = $client->post("https://api.openai.com/v1/chat/completions", [
-
             'headers' => [
-
                 'Content-Type' => 'application/json',
-
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-
             ],
 
             'json' => [
-
                 "model" => "gpt-3.5-turbo",
-
                 'messages' => [
-
                     [
-
                         "role" => "user",
-                        "content" => $contant
-
+                        "content" => $content
                     ]
 
                 ],
-
-                
                 'temperature' => 0.5,
 
                 "max_tokens" => 200,
-            //     'n' => 5, // Set the desired pagination count
-            // 'stop' => ['\n'],
+                'n' => 10, // Set the desired pagination count
+                'stop' => ['\n'],
 
                 "top_p" => 1.0,
 
@@ -185,7 +138,7 @@ class OpenAIController extends Controller
 
             ]
 
-            
+
 
         ]);
 
@@ -195,9 +148,10 @@ class OpenAIController extends Controller
         // Get the pagination count from the completion
         // $paginationCount = count($completion['choices']);
 
-      
+
 
         $data = json_decode($response->getBody(), true);
+        dd($data);
         // dd($data);
 
         $content = $data['choices'][0]['message']['content'];

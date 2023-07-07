@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OpenAIController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\apiTestController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,3 +27,5 @@ Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('
 Route::post('chat-with-bot', [OpenAIController::class, 'botData'])->name('chat.with.bot')->middleware('auth');
 Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');
 
+//test
+Route::get('test.api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');

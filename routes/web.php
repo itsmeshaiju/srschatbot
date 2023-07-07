@@ -28,4 +28,9 @@ Route::post('chat-with-bot', [OpenAIController::class, 'botData'])->name('chat.w
 Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');
 
 //test
+
 Route::get('test.api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');
+
+// Route::get('testpdf', [PdfController::class, 'generatePDF'])->name('test.pdf')->middleware('auth');
+
+

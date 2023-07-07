@@ -13,7 +13,7 @@ class PdfController extends Controller
     public function generatePDF($pdf_name)
 {
     $data = gptQuestionAnswer::select('id', 'question_and_answer')->where('user_id',auth()->user()->id)->orderBy('id','desc')->first();
-$data = json_decode($data['question_and_answer'], TRUE);
+    $data = json_decode($data['question_and_answer'], TRUE);
     $content = $data['answer'];
    
     // Generate PDF using TCPDF

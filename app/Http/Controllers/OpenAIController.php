@@ -151,7 +151,7 @@ class OpenAIController extends Controller
 
 
         $data = json_decode($response->getBody(), true);
-        dd($data);
+       
         // dd($data);
 
         $content = $data['choices'][0]['message']['content'];

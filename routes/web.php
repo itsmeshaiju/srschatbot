@@ -29,7 +29,7 @@ Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('ge
 
 //test
 
-Route::get('test.api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');
+Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');
 
 // Route::get('testpdf', [PdfController::class, 'generatePDF'])->name('test.pdf')->middleware('auth');
 

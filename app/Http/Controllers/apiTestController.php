@@ -6,64 +6,74 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use App\Models\gptQuestionAnswer;
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
+use GuzzleHttp\Promise\Utils;
 class apiTestController extends Controller
 {
 
 
-    function fetchChatCompletions11($prompt, $page = 1, $completions = [])
-    {
-    $page = '1'; // The page number you want to retrieve
-    $messagesPerPage = '5'; // The number of messages per page
-    
-    $allMessages = []; // Array to store all the messages
-    
-    do {
-        $response = Http::withOptions([
-            'verify' => base_path('resources/assets/cacert.pem'),
-        ])->withHeaders([
-            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-        ])->post('https://api.openai.com/v1/chat/completions', [
-            'model' => 'gpt-3.5-turbo',
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => 'You are a helpful assistant.'
-                ],
-                [
-                    'role' => 'user',
-                    'content' => $prompt
-                ],
-            ],
-            'max_tokens' => 100, // Adjust the maximum number of tokens as needed
-            'page' => $page,
-            'n' => $messagesPerPage, // Number of messages to retrieve per page
-        ]);
-    
-        $responseData = $response->json();
-        dd('res',$responseData);
-        // Check if the API response is successful
-        if ($response->successful() && isset($responseData['choices'])) {
-           
-            $messages = $responseData['choices'][0]['message']['content'];
-            $allMessages = array_merge($allMessages, $messages);
-            $page++;
-        } else {
-            // Handle API error or unsuccessful response
-            // You may want to log or display an error message
-            break;
-        }
-        
-    } 
-   
-    while ($responseData['choices'][0]['message']['role'] !== 'assistant');
-
-   
-}    
+public function fetchChatCompletions(){
+    $prompt = "print onelakh words";
 
 
+    // Create a new Guzzle HTTP client
+    $client = new Client([
+        'curl' => [
+            CURLOPT_CAINFO => base_path('resources/assets/cacert.pem')
+        ]
+    ]);
+
+// Set the API endpoint URL
+$url = 'https://api.openai.com/v1/completions';
+
+// Set the request headers
+$headers = [
+    'Content-Type' => 'application/json',
+    'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'), // Replace $OPENAI_API_KEY with your actual API key
+];
+
+// Set the request body
+$data = [
+    'model' => 'text-davinci-003',
+    'prompt' => $prompt,
+    'temperature' => 1,
+    'max_tokens' => 2048,
+    'top_p' => 1,
+    'frequency_penalty' => 0,
+    'presence_penalty' => 0,
+];
+
+// Send the POST request to the API
+// $response = $client->post($url, [
+//     'headers' => $headers,
+//     'json' => $data,
+// ]);
 
 
-function fetchChatCompletions($prompt, $page = 1, $completions = [])
+$promises = [
+    $client->postAsync($url, [
+        'headers' => $headers,
+        'json' => $data,
+    ]),
+];
+
+$results = Utils::unwrap($promises);
+$response = $results[0]->getBody()->getContents();
+
+// Get the response body
+$data = json_decode($response, true);
+$content = $data['choices'][0];
+ dd($content);
+}
+
+
+
+
+
+
+
+function fetchChatCompletions11($prompt, $page = 1, $completions = [])
 {
 
     // $qtArray = gptQuestionAnswer::select('question_and_answer')->where('user_id', auth()->user()->id)->orderBy('id')->get();

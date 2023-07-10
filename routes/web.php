@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OpenAIController;
+use App\Http\Controllers\OpenAIController_copy;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\Auth\AuthController;
 /*
@@ -25,6 +26,7 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout')->middlew
 Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('auth');
 Route::post('chat-with-bot', [OpenAIController::class, 'botData'])->name('chat.with.bot')->middleware('auth');
 Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');
+// Route::get('/testchat', [OpenAIController_copy::class, 'index'])->name('index')->middleware('auth');
 
 //test
 // Route::get('testpdf', [PdfController::class, 'generatePDF'])->name('test.pdf')->middleware('auth');

@@ -10,7 +10,8 @@ class Category extends Model
     use HasFactory;
 
     //Relationship With Question
-    public function questions(){
+    public function questions()
+    {
         return $this->hasMany(Question::class,'cat_id');
     }
 }

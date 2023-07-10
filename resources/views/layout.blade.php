@@ -51,6 +51,13 @@
             margin-left: 0;
             margin-right: 0;
         }
+        .success-box {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
     </style>
     
 </head>

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 class MailController extends Controller
 {
-
+//sendMail function is used to send pdf to the registered email address. Here passing two parameters: pdfName and toMail.pdfName is the name of the pdf file.
     public function sendMail($pdfName, $toMail = false)
     {
         $recipient = auth::user()->email; // Set the recipient email address

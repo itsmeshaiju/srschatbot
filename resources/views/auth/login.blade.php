@@ -1,6 +1,20 @@
 @extends('layout')
   
 @section('content')
+                                                                                        
+@if(session('success'))
+    <div class="success-box">
+        {{ session('success') }}
+    </div>
+    <script>
+        setTimeout(function() {
+            var successBox = document.querySelector('.success-box');
+            if (successBox) {
+                successBox.style.display = 'none';
+            }
+        }, 2000);
+    </script>
+@endif
 <main class="login-form">
   <div class="cotainer">
       <div class="row justify-content-center">
@@ -46,8 +60,7 @@
                                   Login
                               </button>
                           </div>
-                      </form>
-                        
+                      </form>                       
                   </div>
               </div>
           </div>

@@ -20,8 +20,6 @@ class PdfController extends Controller
         $pdf->MultiCell(0, 10, 'Content: '.$content, 0, 1); //Multicell method is used to add the content to the pdf and displayed as a multi-line cell
         $pdfContent = public_path('SRSDoc/' . $pdfName); //The $pdfContent variable is assigned the path where the PDF file will be saved.
         $pdf->Output($pdfContent, 'F'); //used to save the PDF file to the specified path
-
-        
         return $pdfContent;
     }
 

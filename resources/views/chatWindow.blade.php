@@ -1,6 +1,21 @@
 @extends('layout')
   
 @section('content')
+
+@if(session('success'))
+    <div class="success-box1">
+        {{ session('success') }}
+    </div>
+    <script>
+        setTimeout(function() {
+            var successBox = document.querySelector('.success-box1');
+            if (successBox) {
+                successBox.style.display = 'none';
+            }
+        }, 2000);
+    </script>
+@endif
+
 <head>
  <title>Software Requirement Chatbot</title>
  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">

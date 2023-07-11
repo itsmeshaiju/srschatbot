@@ -43,13 +43,41 @@
         }
         .login-form
         {
-            padding-top: 1.5rem;
+            padding-top: 5.5rem;
             padding-bottom: 1.5rem;
         }
         .login-form .row
         {
             margin-left: 0;
             margin-right: 0;
+        }
+        .success-box {
+            position: fixed;
+            top: 4.5rem;
+            left: 0;
+            width: 100%;
+            background-color: #dff0d8;
+            color: #3c763d;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            line-height: 1.4;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .success-box1{
+            position: fixed;
+            top: 2.5rem;
+            left: 0;
+            width: 100%;
+            background-color: #dff0d8;
+            color: #3c763d;
+            /* padding: 20px; */
+            text-align: center;
+            font-size: 18px;
+            line-height: 1.4;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
     </style>
     

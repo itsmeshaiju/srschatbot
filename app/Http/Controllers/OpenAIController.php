@@ -34,14 +34,14 @@ class OpenAIController extends Controller
         if ($request->qt_count == $qtCount) {
             $question = [
 
-                'question_name' => 'can we procceed ?',
+                'question_name' => 'Can we procceed ?',
                 'id' => 0
             ];
 
             return response()->json($question, 200, array(), JSON_PRETTY_PRINT);
         }
 
-        //this block for send contant to chatgpt
+        //this block for send content to chatgpt
         if (isset($request->q_id) && $request->q_id == 0) {
 
             $botData   =  $this->botData();
@@ -141,7 +141,7 @@ class OpenAIController extends Controller
         ]);
         $data = json_decode($response->getBody(), true);
 
-        // dd($data);
+         
 
         $content = $data['choices'][0]['message']['content'];
 
@@ -171,7 +171,7 @@ class OpenAIController extends Controller
         $data['choices'][0]['message']['content'] = nl2br($content);
 
         $question = [
-            'question_name' => $data['choices'][0]['message']['content'] . '<br> can we send via mail in your registered mail ?',
+            'question_name' => $data['choices'][0]['message']['content'] . '<br>  Shall we send this SRS document to your registered email ?',
             'id' => 'send_mail'
         ];
 

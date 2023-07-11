@@ -5,6 +5,7 @@ use App\Http\Controllers\OpenAIController;
 use App\Http\Controllers\OpenAIController_copy;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\MailController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes

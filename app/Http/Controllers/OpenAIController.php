@@ -37,7 +37,7 @@ class OpenAIController extends Controller
         This block for send content to chatgpt
         checking for all questions are completed  or not if completed all questions and answers  are push to  chat gpt api 
         */
-        if (isset($request->q_id) && $request->q_id == 0) { 
+        if (isset($request->q_id) && $request->q_id == 0) {
             $chatGpt   =  $this->chatGpt();  // call chatgpt api function 
             return $chatGpt; //return chat gpt generated data
         }
@@ -45,21 +45,21 @@ class OpenAIController extends Controller
         /*
         This block for srs document convert to pdf and send via mail
         push data to pdf generating   then send via  registerd  mail 
-        */ 
+        */
         if (isset($request->q_id) && $request->q_id == 'send_mail') { //checking next request is send mail or not
-            $text =  date("ymdhis").Auth::user()->id;//generated pdf name make unique
-            $text = Hash::make($text); //text hashing or text  convert to a  specific code 
-            $name = "SRSDocument_" . $text . '.pdf'; //pdf name 
+            $text =  date("ymdhis") . Auth::user()->id; //generated pdf name make unique
+            // $text = Hash::make($text); //text hashing or text  convert to a  specific code 
+            $name = "SRSDocument_" . $text . ".pdf"; //pdf name 
             $pdfController = new PdfController(); //call pdf controller 
-            $pdfContent = $pdfController->generatePDF($name);//call pdf controller function and get return data
+            $pdfContent = $pdfController->generatePDF($name); //call pdf controller function and get return data
             $mailController = new MailController(); // call mail controller 
-            $mailController->sendMail($pdfContent);//call mail controller function and get return data
+            $mailController->sendMail($pdfContent); //call mail controller function and get return data
             gptQuestionAnswer::where('user_id', auth()->user()->id)->delete(); //delete all question answer data after send mail 
             $question = [
                 'question_name' => 'we will share you pdf shortly..have a nice day',
                 'id' => 'shared_mail'
             ]; // last reponse for after send registerd mail
-            return response()->json($question, 200, array(), JSON_PRETTY_PRINT);//return json data
+            return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
         }
         /* 
         this block for get next questions based on  id order
@@ -74,10 +74,10 @@ class OpenAIController extends Controller
         gptQuestionAnswer::create([
             'question_and_answer' => $json_data,
             'user_id' => auth()->user()->id,
-        ]);// insert to json data and logged user id  to table 
+        ]); // insert to json data and logged user id  to table 
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return next question in  json format
     }
-    
+
 
     /*
     this function for call chatgpt api and return response 
@@ -100,7 +100,7 @@ class OpenAIController extends Controller
         $response = $client->post("https://api.openai.com/v1/chat/completions", [
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'), 
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
             ], //set api header issue ' env('OPENAI_API_KEY')' this data will get .env file 
 
             'json' => [
@@ -120,17 +120,17 @@ class OpenAIController extends Controller
         ]);
         $data = json_decode($response->getBody(), true); //convert response to array
         $content = $data['choices'][0]['message']['content']; //take response text only
-        
+
         $data = [
             'question' => 'create srs document',
             'answer' => $content
-        ];// Prepare gpt answer to array 
+        ]; // Prepare gpt answer to array 
 
         $json_data = json_encode($data); // convert to json
         gptQuestionAnswer::create([
             'question_and_answer' => $json_data,
             'user_id' => auth()->user()->id,
-        ]);//save gpt response to table 
+        ]); //save gpt response to table 
         $content = str_replace('```', " ", $content); // replace unwanted stings
         $data['choices'][0]['message']['content'] = nl2br($content); // add <br> tag
         $question = [

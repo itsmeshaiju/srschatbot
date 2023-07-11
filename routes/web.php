@@ -17,18 +17,19 @@ use App\Http\Controllers\Auth\MailController;
 |
 */
 //Auth
-Route::get('login', [AuthController::class, 'index'])->name('login')->middleware('guest');
-Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post'); 
-Route::get('registration', [AuthController::class, 'registration'])->name('register')->middleware('guest');
-Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post'); 
-Route::get('dashboard', [AuthController::class, 'dashboard'])->middleware('auth');
-Route::get('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
-//Open ai
-Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('auth');
-Route::post('chat-with-bot', [OpenAIController::class, 'botData'])->name('chat.with.bot')->middleware('auth');
-Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');
-// Route::get('/testchat', [OpenAIController_copy::class, 'index'])->name('index')->middleware('auth');
 
+Route::get('login', [AuthController::class, 'index'])->name('login')->middleware('guest');//show login page
+Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');//login users
+Route::get('registration', [AuthController::class, 'registration'])->name('register')->middleware('guest');//show registration page
+Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post'); //users registration
+Route::get('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');//logout user
+//Open ai
+Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('auth');//show chat window
+//Openai/ajax
+Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');//ajax url for  getting already created data from database
+//test
+Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');//created for testing functions
+// Route::get('/testchat', [OpenAIController_copy::class, 'index'])->name('index')->middleware('auth');
 //test
 // Route::get('testpdf', [PdfController::class, 'generatePDF'])->name('test.pdf')->middleware('auth');
 

@@ -16,7 +16,7 @@ class MailController extends Controller
         $recipient = Auth::user()->email; // Set the recipient email address
         $subject = 'SRS Document'; // Set the email subject
         $filePath = $pdfName; // Set the filepath for the PDF attachment
-
+        
         $mailMessage = 'Hi ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day!';
 
         try 

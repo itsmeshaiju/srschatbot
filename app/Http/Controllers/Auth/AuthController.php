@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use App\Models\User;
 use Hash;
-  
+use App\Http\Controllers\MailController;
+
 class AuthController extends Controller
 {
     /**
@@ -67,6 +68,7 @@ class AuthController extends Controller
            
         $data = $request->all();
         $check = $this->create($data);
+        
          
         return redirect("/login")->withSuccess('Great! You have successfully Registered'); //When entering to the login page after complete registration process, display registration successful message
     }

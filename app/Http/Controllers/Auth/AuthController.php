@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     /**
      * Write code on Method
-     *
+     *registration
      * @return response()
      */
     public function index() // show login window
@@ -82,7 +82,7 @@ class AuthController extends Controller
      *
      * @return response()
      */
-    public function create(array $data) //
+    public function create(array $data) // Create registration form
     {
       return User::create([
         'name' => $data['name'],
@@ -96,6 +96,7 @@ class AuthController extends Controller
      *
      * @return response()
      */
+    //Logout from chatwindow and redirect to login window
     public function logout() {
         Session::flush();
         Auth::logout();

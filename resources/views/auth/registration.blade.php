@@ -40,6 +40,17 @@
                                   @endif
                               </div>
                           </div>
+
+                          <div class="form-group row">
+                              <label for="password" class="col-md-4 col-form-label text-md-right">Confirm Password</label>
+                              <div class="col-md-6">
+                                  <input type="password" id="confirm-password" class="form-control" required>
+                                 
+                                      <span id="confirm-password-msg" class="text-danger"></span>
+                                 
+                              </div>
+                          </div>
+                          
   
                           <div class="form-group row">
                               <div class="col-md-6 offset-md-4">
@@ -52,7 +63,7 @@
                           </div>
   
                           <div class="col-md-6 offset-md-4">
-                              <button type="submit" class="btn btn-primary">
+                              <button id="submit-btn" type="submit" class="btn btn-primary">
                                   Register
                               </button>
                           </div>
@@ -64,4 +75,24 @@
       </div>
   </div>
 </main>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+
+$("#confirm-password").keyup(function(){
+
+    password = $('#password').val();
+    confirm_pass = $('#confirm-password').val();
+    if (password != confirm_pass){
+        $('#confirm-password-msg').text('Your password and confirmation password do not match.');
+        $('#submit-btn').prop('disabled', true);
+    }else{
+        $('#confirm-password-msg').text('');
+        $('#submit-btn').prop('disabled', false);
+    }
+
+   
+
+
+});
+</script>
 @endsection

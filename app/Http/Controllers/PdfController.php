@@ -9,8 +9,8 @@ class PdfController extends Controller
     public function generatePDF($pdfName) //The generatePDF function takes a parameter $pdfName (the name of the PDF file)
     {
         $data = gptQuestionAnswer::select('id', 'question_and_answer')->where('user_id',auth()->user()->id)->orderBy('id','desc')->first(); //It retrieves the necessary data from the gptQuestionAnswer table using the select, where, and orderBy methods. 
-        $data = json_decode($data['question_and_answer'], TRUE); //The retrieved data is then decoded from JSON format and assigned to the $data variable.
-        $content = $data['answer']; //The $content variable stores the answer value from the decoded data.
+        $data = json_decode($data['question_and_answer'], TRUE); //The json data is converted to array.
+        $content = $data['answer']; //The $content variable stores the answer value from the array index data.
     
         // Generate PDF using TCPDF
         $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false); // Set page orientation, unit of measurement, and page size

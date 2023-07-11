@@ -51,9 +51,15 @@ class OpenAIController extends Controller
             // $text = Hash::make($text); //text hashing or text  convert to a  specific code 
             $name = "SRSDocument_" . $text . ".pdf"; //pdf name 
             $pdfController = new PdfController(); //call pdf controller 
-            $pdfContent = $pdfController->generatePDF($name); //call pdf controller function and get return data
+            $content = $pdfController->generatePDF($name); //call pdf controller function and get return data
+            //======================
             $mailController = new MailController(); // call mail controller 
-            $mailController->sendMail($pdfContent); //call mail controller function and get return data
+            $mail_header = 'Hi ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day!';
+            $to_mail = auth::user()->email;
+            $subject = 'SRS Document';
+            $type = 'attach';
+            $mailController->sendMail($content,$mail_header,$to_mail,$subject,$type,$name); //call mail controller function and get return data
+            //============
             gptQuestionAnswer::where('user_id', auth()->user()->id)->delete(); //delete all question answer data after send mail 
             $question = [
                 'question_name' => 'we will share you pdf shortly..have a nice day',

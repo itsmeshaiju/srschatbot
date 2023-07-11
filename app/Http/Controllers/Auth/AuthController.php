@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     /**
      * Write code on Method
-     *
+     *registration
      * @return response()
      */
     public function index()

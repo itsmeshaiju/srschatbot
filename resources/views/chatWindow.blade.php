@@ -157,7 +157,7 @@ requirements?</div>
  // Event listener for send button click
  $("#userInput").on('keyup', function (e) {
   
-  if (e.key === 'Enter' || e.keyCode === 13) {
+  if ((e.key === 'Enter' || e.keyCode === 13) && $('#userInput').val() != "" ) {
        
     
         var qt_count =  $('#qt_count').val()

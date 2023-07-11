@@ -7,10 +7,9 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Log;
-//The sendMain function is used to send the pdf file to registered mail address. Here passing two variables pdfName and toMail. pdfName is the name of pdf file
 class MailController extends Controller
 {
-
+//The sendMain function is used to send the pdf file to registered mail address. Here passing two variables pdfName and toMail. pdfName is the name of pdf file
     public function sendMail($pdfName, $toMail = false)
     {
         $recipient = Auth::user()->email; // Set the recipient email address

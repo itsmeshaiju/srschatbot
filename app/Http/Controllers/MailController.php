@@ -14,7 +14,7 @@ class MailController extends Controller
         $subject = 'SRS Document'; // Set the email subject
         $filePath = $pdfName; // Set the filepath for the PDF attachment
 
-        $mailMessage = 'Hi ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day !';
+        $mailMessage = 'Hi ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day!';
 
         Mail::raw($mailMessage, function ($message) use ($recipient, $subject, $filePath, $pdfName)
             {
@@ -22,8 +22,6 @@ class MailController extends Controller
                 ->subject($subject) // Specify the email subject 
                 ->attach($filePath, ['as' => $pdfName]); // Specify the file path of the PDF attachment
         });
-        
-
         return 'Email sent with PDF attachment.';
     }
 

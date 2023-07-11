@@ -42,7 +42,7 @@ class OpenAIController extends Controller
         {
             $question = 
             [
-                'question_name' => 'can we procceed ?',
+                'question_name' => 'Can we procceed ?',
                 'id' => 0
             ];
 
@@ -152,7 +152,7 @@ class OpenAIController extends Controller
         $data['choices'][0]['message']['content'] = nl2br($content);
         $question = 
         [
-            'question_name' => $data['choices'][0]['message']['content'] . '<br> can we send via mail in your registered mail ?',
+            'question_name' => $data['choices'][0]['message']['content'] . '<br> Shall we send this SRS document to your registered email ?',
             'id' => 'send_mail'
         ];
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT);

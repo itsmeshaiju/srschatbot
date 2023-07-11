@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use App\Models\User;
 use Hash;
+use App\Http\Controllers\MailController;
+
   
 class AuthController extends Controller
 {

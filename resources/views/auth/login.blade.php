@@ -6,6 +6,14 @@
     <div class="success-box">
         {{ session('success') }}
     </div>
+    <script>
+        setTimeout(function() {
+            var successBox = document.querySelector('.success-box');
+            if (successBox) {
+                successBox.style.display = 'none';
+            }
+        }, 2000);
+    </script>
 @endif
 <main class="login-form">
   <div class="cotainer">

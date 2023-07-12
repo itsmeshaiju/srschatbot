@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Log;
+
 class MailController extends Controller
 {
 //The sendMail function is used to send the pdf file to registered mail address.
-
     public function sendMail($content, $mail_header, $to_mail, $subject, $type, $file_name)
     {
         try 
@@ -34,7 +34,7 @@ class MailController extends Controller
                 return 'Email sent without PDF attachment.';
             }
         } 
-        catch (\Exception $e) 
+        catch (Exception $e) 
         {
             // Handle the exception as per your requirements
             return 'Failed to send email: ' . $e->getMessage();

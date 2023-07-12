@@ -9,34 +9,38 @@ use Exception;
 use Log;
 class MailController extends Controller
 {
-//The sendMain function is used to send the pdf file to registered mail address. Here passing two variables pdfName and toMail. pdfName is the name of pdf file
-    public function sendMail($pdfName, $toMail = false)
-    {
-        $recipient = Auth::user()->email; // Set the recipient email address
-        $subject = 'SRS Document'; // Set the email subject
-        $filePath = $pdfName; // Set the filepath for the PDF attachment
-        
-        $mailMessage = 'Hi ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day!';
+//The sendMail function is used to send the pdf file to registered mail address.
 
+    public function sendMail($content, $mail_header, $to_mail, $subject, $type, $file_name)
+    {
         try 
         {
-            Mail::raw($mailMessage, function ($message) use ($recipient, $subject, $filePath, $pdfName) {
-                $message->to($recipient) // Specify the recipient's email
-                    ->subject($subject) // Specify the email subject 
-                    ->attach($filePath, ['as' => $pdfName]); // Specify the file path of the PDF attachment
-            });
-            
-            return 'Email sent with PDF attachment.';
+            if ($type == 'attach') 
+            {
+                Mail::raw($mail_header, function ($message) use ($to_mail, $subject, $content, $file_name) {
+                    $message->to($to_mail)
+                        ->subject($subject)
+                        ->attach($content, ['as' => $file_name]);
+                });
+                return 'Email sent with PDF attachment.';
+            } 
+            else 
+            {
+                Mail::raw($mail_header, function ($message) use ($to_mail, $subject, $content, $file_name) {
+                    $message->to($to_mail)
+                        ->subject($subject)
+                        ->attach($content, ['as' => $file_name]);
+                });
+                return 'Email sent without PDF attachment.';
+            }
         } 
-        catch (Exception $e) 
+        catch (\Exception $e) 
         {
-            // Exception occurred while sending email
-            Log::error('Failed to send email: ' . $e->getMessage());
-
-            // Return an error message or throw the exception if needed
-            return 'Failed to send email. Please try again later.';
+            // Handle the exception as per your requirements
+            return 'Failed to send email: ' . $e->getMessage();
         }
     }
+
 }
 
 

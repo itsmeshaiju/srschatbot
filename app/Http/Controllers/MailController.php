@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Log;
-//The sendMain function is used to send the pdf file to registered mail address. Here passing two variables pdfName and toMail. pdfName is the name of pdf file
+
 class MailController extends Controller
 {
+
 
     public function sendMail($attachment,$content,$to_mail,$subject,$is_attach,$file_name)
     {
@@ -33,9 +34,6 @@ class MailController extends Controller
         }
     }
 
-
-            
-    
 }
 
 

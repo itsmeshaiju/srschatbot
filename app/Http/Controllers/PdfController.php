@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use TCPDF;
 use App\Models\gptQuestionAnswer;
+use Exception;
 class PdfController extends Controller
 {
     public function generatePDF($pdfName) //The generatePDF function takes a parameter $pdfName (the name of the PDF file)
     {
-        $data = gptQuestionAnswer::select('id', 'question_and_answer')->where('user_id',auth()->user()->id)->orderBy('id','desc')->first(); //It retrieves the necessary data from the gptQuestionAnswer table using the select, where, and orderBy methods. 
+        $data = gptQuestionAnswer::select('id', 'question_and_answer')->where('user_id',auth()->user()->id)->orderBy('id','desc')->first(); //It retrieves the necessary data from the gptQuestionAnswer table using the select, where, and orderBy methods.
+        if (empty($data)) { 
+            throw new Exception("Questions and Answers are empty");
+        } 
         $data = json_decode($data['question_and_answer'], TRUE); //The json data is converted to array.
         $content = $data['answer']; //The $content variable stores the answer value from the array index data.
     

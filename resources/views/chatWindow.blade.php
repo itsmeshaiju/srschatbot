@@ -132,6 +132,7 @@ requirements?</div>
 
 </div>
 <div class="bot-message" id="bot_msg">
+  
 
 
 </div>
@@ -158,9 +159,18 @@ requirements?</div>
  $("#userInput").on('keyup', function (e) {
   
   if ((e.key === 'Enter' || e.keyCode === 13) && $('#userInput').val() != "" ) {
-       
-    
-        var qt_count =  $('#qt_count').val()
+    getChatReplay();
+      }
+ });
+ 
+
+ function getButtonText(data){
+  $('#userInput').val(data);
+  getChatReplay();
+ }
+
+ function getChatReplay() {
+  var qt_count =  $('#qt_count').val()
         $('#user-answer').append( $('#userInput').val())
         $('#user-answer').attr('id', '');
         $('#loader').show();
@@ -183,7 +193,7 @@ requirements?</div>
               new_count = parseInt(qt_count) + 1
                 $('#loader').hide();
                 $('#sendButton').prop('disabled', false);
-                contant  = data['question_name']
+                contant  = data['question_name'] + '<br><br><br>'+data['options_html'];
                 q_id = data['id']
                 $('#bot_msg').append('<br><br>Bot: ' + contant + '<br><br><div id="user-answer" class="bot-message text-success" style="text-align: right"></div>')
                 $('#sendButton').prop('disabled', false);
@@ -196,8 +206,6 @@ requirements?</div>
                 console.log(data)
             }
         });
-      }
- });
- 
+  }
  </script>
 @endsection

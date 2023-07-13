@@ -11,34 +11,31 @@ use Log;
 class MailController extends Controller
 {
 
-    public function sendMail($content,$mail_header,$to_mail,$subject,$type,$file_name)
+    public function sendMail($attachment,$content,$to_mail,$subject,$is_attach,$file_name)
     {
 
         
-        if ($type == 'attach') {
-            Mail::raw($mail_header, function ($message) use ($to_mail, $subject, $content, $file_name)
+        if ($is_attach == true) {
+            Mail::raw($content, function ($message) use ($to_mail, $subject, $attachment, $file_name)
             {
             $message->to($to_mail) // Specify the recipient's email
                 ->subject($subject) // Specify the email subject 
-                ->attach($content, ['as' => $file_name]); // Specify the file path of the PDF attachment
+                ->attach($attachment, ['as' => $file_name]); // Specify the file path of the PDF attachment
         });
         return 'Email sent with PDF attachment.';
         }else{
-            Mail::raw($mail_header, function ($message) use ($to_mail, $subject, $content, $file_name)
+            Mail::raw($content, function ($message) use ($to_mail, $subject, $attachment, $file_name)
             {
             $message->to($to_mail) // Specify the recipient's email
-                ->subject($subject) // Specify the email subject 
-                ->attach($content, ['as' => $file_name]); // Specify the file path of the PDF attachment
+                ->subject($subject); // Specify the email subject 
         });
         return 'Email sent with PDF attachment.';
         }
     }
 
 
-            // Return an error message or throw the exception if needed
-            return 'Failed to send email. Please try again later.';
-        }
-    }
+            
+    
 }
 
 

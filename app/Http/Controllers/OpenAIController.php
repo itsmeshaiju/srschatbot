@@ -26,7 +26,7 @@ class OpenAIController extends Controller
     public function getQuestions(Request $request) //ajax request for getting questions
     {
         try {
-
+            
             $qtCount = Question::count(); //get all question count 
             if (empty($qtCount)) { 
                 throw new Exception("Questions are empty");
@@ -34,6 +34,7 @@ class OpenAIController extends Controller
             if ($request->qt_count == $qtCount) {  //checking this is last question or not
                 $question = [
                     'question_name' => 'Can we procceed ?',
+                    'options_html'=>'',
                     'id' => 0
                 ]; // create response for last question befor generating srs document
                 return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
@@ -66,6 +67,7 @@ class OpenAIController extends Controller
                 gptQuestionAnswer::where('user_id', auth()->user()->id)->delete(); //delete all question answer data after send mail 
                 $question = [
                     'question_name' => 'we will share you pdf shortly..have a nice day',
+                    'options_html'=>'',
                     'id' => 'shared_mail'
                 ]; // last reponse for after send registerd mail
                 return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
@@ -95,6 +97,7 @@ class OpenAIController extends Controller
             $json_data = json_encode($data); // convert to json 
             $res =  gptQuestionAnswer::create([
                 'question_and_answer' => $json_data,
+                'options_html'=>'',
                 'user_id' => auth()->user()->id,
             ]); // insert to json data and logged user id  to table 
             if(isset($res->id) == false){
@@ -104,6 +107,8 @@ class OpenAIController extends Controller
             return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return next question in  json format
         } catch (\Exception $e) {
             Log::channel('openai')->error($e);
+            $question['message'] = "something went wrong try again later";
+            return response()->json($question, 500, array(), JSON_PRETTY_PRINT); //return next question in  json format
         }
     }
 
@@ -173,6 +178,7 @@ class OpenAIController extends Controller
         $data['choices'][0]['message']['content'] = nl2br($content); // add <br> tag
         $question = [
             'question_name' => $data['choices'][0]['message']['content'] . '<br>  Shall we send this SRS document to your registered email ?',
+            'options_html'=>'',
             'id' => 'send_mail'
         ]; // generate response for send mail 
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT); // return json data to view 

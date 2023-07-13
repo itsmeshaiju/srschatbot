@@ -153,6 +153,9 @@ requirements?</div>
  
  </div>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css">
+
  <script>
  const sendButton = document.getElementById("sendButton");
  // Event listener for send button click
@@ -202,8 +205,7 @@ requirements?</div>
                 $('#userInput').val('')
             },
             error: function(error) {
-                $('#loader').hide();
-                console.log(data)
+              toastr.error('Something went wrong.Try again later..!', 'Failed!');
             }
         });
   }

@@ -14,6 +14,7 @@ use Exception;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\MailController;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 
 class OpenAIController extends Controller
@@ -23,10 +24,18 @@ class OpenAIController extends Controller
         return view('chatWindow'); //return html file
     }
 
+
+    public function newChatWindow(Request $request){
+        return view('newChatWindow'); //return html file
+    }
+
     public function getQuestions(Request $request) //ajax request for getting questions
     {
         try {
             
+               
+
+
             $qtCount = Question::count(); //get all question count 
             if (empty($qtCount)) { 
                 throw new Exception("Questions are empty");
@@ -46,6 +55,13 @@ class OpenAIController extends Controller
             if (isset($request->q_id) && $request->q_id == 0) {
                 $chatGpt   =  $this->chatGpt();  // call chatgpt api function 
                 return $chatGpt; //return chat gpt generated data
+            }
+
+            /*
+            set ask name to sesssion 
+            */
+            if (isset($request->q_id) && $request->q_id == 2) {
+                Session::put('clilent_ask_name', $request->user_input);
             }
 
             /*
@@ -83,8 +99,12 @@ class OpenAIController extends Controller
 
                 $array = explode(",", $question->options);
                 $options .='<div class="row col-md-12">';
+                $i = 0;
                 foreach($array as $q){
-                    $options .='<div class="col-md-3"><button class="btn btn-success " onclick="getButtonText(\''.$q.'\')">'.ucwords($q).'</button></div>';
+                    $input_id = '#btn_row_'.$i.'_'.$id;
+                    $html_id = 'btn_row_'.$i.'_'.$id;
+                    $options .='<div class="col-md-3"><button class="btn  btn-primary" id="'.$html_id.'" onclick="getButtonText(\''.$q.'\',\''.$input_id.'\')">'.ucwords($q).'</button></div>';
+                    $i++;
                 }
                 $options .= '</div>';
                
@@ -93,7 +113,7 @@ class OpenAIController extends Controller
                 'answer' => $request->user_input,
                 'question' => $question->question_name
                 
-            ]; // set ask question and answer to array 
+            ]; // set ask question and answer to array active
             $json_data = json_encode($data); // convert to json 
             $res =  gptQuestionAnswer::create([
                 'question_and_answer' => $json_data,
@@ -104,6 +124,14 @@ class OpenAIController extends Controller
                 throw new Exception("server error ");
             }
             $question['options_html'] = $options;
+
+            if($request->q_id == 2) {
+
+                $contant = 'Hi '.ucwords(Session::get('clilent_ask_name')).'   
+                '.$question['question_name'];
+                $question['question_name'] = $contant;
+            }
+          
             return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return next question in  json format
         } catch (\Exception $e) {
             Log::channel('openai')->error($e);
@@ -111,7 +139,6 @@ class OpenAIController extends Controller
             return response()->json($question, 500, array(), JSON_PRETTY_PRINT); //return next question in  json format
         }
     }
-
 
     /*
     this function for call chatgpt api and return response 

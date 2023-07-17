@@ -32,6 +32,9 @@ Route::post('post-registration', [AuthController::class, 'postRegistration'])->n
 Route::get('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');//logout user
 //Open ai
 Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('auth');//show chat window
+
+
+
 //Openai/ajax
 Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');//ajax url for  getting already created data from database
 
@@ -41,6 +44,6 @@ Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name
 
 //test
 Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');//created for testing functions
-
+Route::get('new-chat', [OpenAIController::class, 'newChatWindow'])->name('newChatWindow')->middleware('auth');//show chat window
 
 

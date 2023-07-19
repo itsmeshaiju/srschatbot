@@ -21,7 +21,7 @@ class OpenAIController extends Controller
 {
     public function index(Request $request) // show chat window 
     {
-        return view('chatWindow'); //return html file
+        return view('newChatWindow'); //return html file
     }
 
 

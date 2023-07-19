@@ -88,7 +88,7 @@ body[data-theme=pink] {
   --toggle-bg: #1a233b;
 }
 body[data-theme=navy-dark] {
-  --app-bg: #060415;
+  --app-bg: #060415 !important;
   --box-color: #12172d;
   --box-border: #477eff;
   --button-bg: #477eff;
@@ -497,12 +497,13 @@ body[data-theme=dark] {
   font-size: 12px;
   line-height: 16px;
   width: auto;
-  max-width: 80%;
+  /*max-width: 80%;*/
   margin: 5px;
-  word-wrap: break-word;
+  
   color: var(--text-dark);
 }
 .message-box-wrapper {
+ 
   margin: 0 12px;
 }
 .message-box-wrapper span {
@@ -748,7 +749,7 @@ body[data-theme=dark] {
   background-color: #e8d5db;
 }
 .theme-color.dark {
-  background-color: #060415;
+  background-color: #060415 !important;
 }
 .theme-color.navy-dark {
   background-color: #192734;

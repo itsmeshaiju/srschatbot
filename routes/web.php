@@ -7,6 +7,7 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\MailController;
 
+use App\Http\Controllers\admin\QuestionController;
 use App\Http\Controllers\apiTestController;
 /*
 |--------------------------------------------------------------------------
@@ -46,4 +47,6 @@ Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name
 Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');//created for testing functions
 Route::get('new-chat', [OpenAIController::class, 'newChatWindow'])->name('newChatWindow')->middleware('auth');//show chat window
 
+//admin
+Route::get('admin/', [QuestionController::class,'index'])->name('admin.index');
 

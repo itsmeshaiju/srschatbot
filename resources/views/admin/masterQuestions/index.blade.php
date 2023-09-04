@@ -68,17 +68,17 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title">{{ $page_name }} List</h3>
-                @can($permission . '-create')
+               
                     <div class="ml-auto">
-                        <a class="btn btn-success btn-sm" href="{{ route('tag.create') }}">Create New {{ $page_name }}</a>
+                        <a class="btn btn-success btn-sm" href="{{ route('question.create') }}">Create New {{ $page_name }}</a>
                     </div>
-                @endcan
+               
 
             </div>
 
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped  tag_tbl">
+                <table id="example1" class="table table-bordered table-striped  category_tbl">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -88,6 +88,30 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr>
+                            <td>xfvb</td>
+                            <td>dfg</td>
+                            <td>dfg</td>
+                            <td>dfg</td>
+                        </tr>
+                        <tr>
+                            <td>xfvb</td>
+                            <td>dfg</td>
+                            <td>dfg</td>
+                            <td>dfg</td>
+                        </tr>
+                        <tr>
+                            <td>xfvb</td>
+                            <td>dfg</td>
+                            <td>dfg</td>
+                            <td>dfg</td>
+                        </tr>
+                        <tr>
+                            <td>xfvb</td>
+                            <td>dfg</td>
+                            <td>dfg</td>
+                            <td>dfg</td>
+                        </tr>
 
                     </tbody>
 
@@ -107,81 +131,6 @@
     </section>
     <!-- /.content -->
 @endsection('content')
-@section('scripts')
-    @include('admin.layouts.dataTableScripts')
-    <script>
-        var table = "";
 
-        $(function() {
-
-            table = $('.tag_tbl').DataTable({
-             
-        searchBuilder: true, // Enable the search builder plugin
-     
-                processing: true,
-                serverSide: true,
-                lengthChange: true,
-                autoWidth: false,
-                "iDisplayLength": 10,
-                
-                ajax: {
-                    url: "{{ route('tag.index') }}",
-                    data: function(d) {
-                        d.status = $('#filter_status').val()
-                        d.name = $('#filter_name').val()
-                        d.search = $('input[type="search"]').val()
-                    }
-                },
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'status',
-                        name: 'status'
-                    },
-
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
-                ],
-                columnDefs: [{
-                        "targets": 1,
-                        "className": "text-center",
-                    },
-                    {
-                        "targets": 2,
-                        "className": "text-center",
-                    },
-                    {
-                        "targets": 3,
-                        "className": "text-center",
-                    },
-
-                ],
-            });
-
-               });
-
-        $('#filter_status').change(function() {
-            table.draw();
-        });
-        $('#filter_name').keyup(function() {
-            table.draw();
-        });
-
-    
-           
-    </script>
-@endsection
 
 <!-- /.content-wrapper -->

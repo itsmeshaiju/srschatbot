@@ -49,4 +49,6 @@ Route::get('new-chat', [OpenAIController::class, 'newChatWindow'])->name('newCha
 
 //admin
 Route::get('admin/', [QuestionController::class,'index'])->name('admin.index');
+Route::resource('question', QuestionController::class);
+
 

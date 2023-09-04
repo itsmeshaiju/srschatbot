@@ -5,11 +5,11 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <!-- <a class="btn-sm btn-success" href="{{ route('roles.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a> -->
+
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <a class="btn-sm btn-success" href="{{ route('users.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+        <a class="btn-sm btn-success" href="{{ route('question.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a>
         <!-- <h1>Show Role</h1> -->
         <div class="pull-right">
         </div>
@@ -40,11 +40,11 @@
     </div>
     @endif
     <div class="card-header">
-      <h3 class="card-title">Create New User</h3>
+      <h3 class="card-title">Create New {{$page_name}}</h3>
     </div>
     <!-- /.card-header -->
     <!-- form start -->
-    {!! Form::open(array('route' => 'users.store','method'=>'POST')) !!}
+    {!! Form::open(array('route' => 'question.store','method'=>'POST')) !!}
     <div class="card-body">
     <div class="col-xs-12 col-sm-12 col-md-12">
         <div class="form-group">
@@ -52,37 +52,6 @@
             {!! Form::text('name', null, array('placeholder' => 'Name','class' => 'form-control')) !!}
         </div>
     </div>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Email:</strong>
-            {!! Form::text('email', null, array('placeholder' => 'Email','class' => 'form-control')) !!}
-        </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Password:</strong>
-            {!! Form::password('password', array('placeholder' => 'Password','class' => 'form-control')) !!}
-        </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Confirm Password:</strong>
-            {!! Form::password('confirm-password', array('placeholder' => 'Confirm Password','class' => 'form-control')) !!}
-        </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Role:</strong>
-            <select class="form-control select2 select2-hidden-accessible" name="roles[]" style="width: 100%;" data-select2-id="1" tabindex="-1" aria-hidden="true">
-            <option selected="selected" value="">-- Select --</option>
-                @foreach($roles as $role)
-            <option value="{{ $role }}">{{ $role }}</option>
-            @endforeach
-            </select>
-        
-        </div>
-    </div>
-
     <div class="col-xs-12 col-sm-12 col-md-12">
       <div class="form-group">
           <strong>Status:</strong>

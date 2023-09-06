@@ -5,11 +5,11 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <!-- <a class="btn-sm btn-success" href="{{ route('roles.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a> -->
+ 
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <a class="btn-sm btn-success" href="{{ route('users.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+        <a class="btn-sm btn-success" href="{{ route('question.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a>
         <!-- <h1>Show Role</h1> -->
         <div class="pull-right">
         </div>
@@ -42,12 +42,12 @@
     </div>
     <!-- /.card-header -->
     <!-- form start -->
-    {!! Form::model($category, ['method' => 'PATCH','route' => ['category.update', $category->id]]) !!}
+    {!! Form::model($question, ['method' => 'PATCH','route' => ['question.update', $question->id]]) !!}
     <div class="card-body">
     <div class="col-xs-12 col-sm-12 col-md-12">
         <div class="form-group">
-            <strong>Name:</strong>
-            {!! Form::text('name', null, array('placeholder' => 'Name','class' => 'form-control')) !!}
+            <strong>Question:</strong>
+            {!! Form::text('question', null, array('placeholder' => 'Question','class' => 'form-control')) !!}
         </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12">
@@ -55,8 +55,8 @@
           <strong>Status:</strong>
           <select class="form-control select2 select2-hidden-accessible" name="status" style="width: 100%;" data-select2-id="1" tabindex="-1" aria-hidden="true">
           <option selected="selected" value="">-- Select --</option>
-          <option {{$category->status == 1 ? 'selected' : '' }} value="1">Activate</option>
-          <option {{$category->status == 0 ? 'selected' : '' }} value="0">Deactivate </option>
+          <option {{$question->status == 1 ? 'selected' : '' }} value="1">Activate</option>
+          <option {{$question->status == 0 ? 'selected' : '' }} value="0">Deactivate </option>
           </select>
       
       </div>

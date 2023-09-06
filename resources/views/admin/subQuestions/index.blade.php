@@ -40,14 +40,14 @@
             <!-- form start -->
 
             <div class="card-body">
-                <form action="{{ route('question.index') }}" method="POST">
+                <form action="{{ route('subquestion.index') }}" method="POST">
                     @csrf
                 <div class="col-xs-12 col-sm-12 col-md-12 row">
 
                     <div class="form-group col-md-6">
                         <strong>question </strong>
                         <input id="filter_question" placeholder="question" required class="form-control" name="filter_question"
-                            type="text" value="{{ $filterQuestion  }}">
+                            type="text" value="">
                     </div>
                     <div class="form-group col-md-6">
                         <strong>Status </strong>
@@ -55,8 +55,8 @@
                             <select id="filter_status" class="form-control select2 select2-hidden-accessible" name="filter_status"
                                 style="width: 100%;" data-select2-id="1" tabindex="-1" aria-hidden="true">
                                 <option selected="selected" value="">-- Select --</option>
-                                <option {{ $filterStatus == 1 ? 'selected' : '' }} value="1">Activate</option>
-                                <option {{ $filterStatus == 0 ? 'selected' : '' }} value="0">Deactivate </option>
+                                <option value="1">Activate</option>
+                                <option  value="0">Deactivate </option>
                             </select>
 
                         </div>
@@ -91,7 +91,7 @@
                 <h3 class="card-title">{{ $page_name }} List</h3>
 
                 <div class="ml-auto">
-                    <a class="btn btn-success btn-sm" href="{{ route('question.create') }}">Create New
+                    <a class="btn btn-success btn-sm" href="{{ route('subquestion.create') }}">Create New
                         {{ $page_name }}</a>
                 </div>
 
@@ -104,8 +104,9 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Question</th>
-                            <th>Status</th>
+                            <th>Main Question</th>
+                            <th>Sub Questions</th>
+                            <th>Answers</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -113,17 +114,21 @@
                         @php
                             $i = 1;
                         @endphp
-                        @foreach ($questions as $qt)
-                            @if ($qt->status == 0)
-                                @php $status = '<label class="badge badge-danger">Deactivated</label>' @endphp
-                            @else
-                                @php $status = '<label class="badge badge-success">Activated</label>' @endphp
-                            @endif
+                        @foreach ($mainQuestions as $qt)
+                          
                             <tr>
                                 <td>{{ $i++ }}</td>
                                 <td>{{ $qt->question }}</td>
+                               
                                 <td>
-                                    {!! $status !!}
+                                    @foreach ($qt->subQuestion as $sub)
+                                        <li>{{ $sub->question }}</li>       
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach ($qt->subQuestion as $sub)
+                                        <li>{{ $sub->answer }}</li>       
+                                    @endforeach
                                 </td>
                                 <td>
                                     <div class="btn-group">
@@ -133,24 +138,14 @@
                                                 Action
                                             </button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('question.show', $qt->id) }}">
+                                                <a class="dropdown-item" href="{{ route('subquestion.show', $qt->id) }}">
                                                     <i class="fa fa-fw fa-eye mr-2"></i>View
                                                 </a>
                                                 <hr>
 
-                                                <a class="dropdown-item" href="{{ route('question.edit', $qt->id) }}">
+                                                <a class="dropdown-item" href="{{ route('subquestion.edit', $qt->id) }}">
                                                     <i class="fa fa-fw fa-edit mr-2"></i>Edit
                                                 </a>
-                                                <hr>
-
-                                                <form action="{{ route('question.destroy', $qt->id) }}" method="POST">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-dangers">
-                                                        <i class="fa fa-fw fa-trash ml-3"></i>Delete
-                                                    </button>
-                                                </form>
-
                                             </div>
                                         </div>
                                     </div>

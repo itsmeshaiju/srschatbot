@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\MailController;
 
 use App\Http\Controllers\admin\QuestionController;
+use App\Http\Controllers\admin\SubQuestionController;
 use App\Http\Controllers\apiTestController;
 /*
 |--------------------------------------------------------------------------
@@ -50,5 +51,6 @@ Route::get('new-chat', [OpenAIController::class, 'newChatWindow'])->name('newCha
 //admin
 Route::get('admin/', [QuestionController::class,'index'])->name('admin.index');
 Route::resource('question', QuestionController::class);
-
+// Route::any('question/', [QuestionController::class,'index'])->name('admin.index');
+Route::resource('subquestion', SubQuestionController::class);
 

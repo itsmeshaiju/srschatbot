@@ -4,11 +4,11 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <!-- <a class="btn-sm btn-success" href="{{ route('roles.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a> -->
+ 
   <div class="container-fluid">
     <div class="row mb-2">
       <div class="col-sm-6">
-        <a class="btn-sm btn-success" href="{{ route('users.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+        <a class="btn-sm btn-success" href="{{ route('question.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a>
         <!-- <h1>Show Role</h1> -->
         <div class="pull-right">
         </div>
@@ -26,7 +26,7 @@
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <!-- <a class="btn-sm btn-success" href="{{ route('roles.index') }}"> <i class="fa fa-arrow-left" aria-hidden="true"></i></a> -->
+  
   <div class="container-fluid">
   <div class="card card-primary">
 <div class="card-header">
@@ -34,14 +34,14 @@
 </div>
 
 <div class="card-body">
-<strong><i class="fa fa-list-alt mr-1"></i> Name</strong>
+<strong><i class="fa fa-question-circle mr-1"></i> Question</strong>
 <p class="text-muted">
-{{ $category->name }}
+{{ $question->question }}
 </p>
 <hr>
 <strong><i class="far fa-calendar mr-1"></i> Status</strong>
 <p class="text-muted">
-@if ($category->status)
+@if ($question->status)
 <label class="badge badge-success">Activated</label>
 @else
 <label class="badge badge-danger">Dectivated</label>

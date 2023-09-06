@@ -45,8 +45,8 @@
                 <div class="col-xs-12 col-sm-12 col-md-12 row">
 
                     <div class="form-group col-md-6">
-                        <strong>question </strong>
-                        <input id="filter_question" placeholder="question" required class="form-control" name="filter_question"
+                        <strong>Question </strong>
+                        <input id="filter_question" placeholder="Question" required class="form-control" name="filter_question"
                             type="text" value="">
                     </div>
                     <div class="form-group col-md-6">

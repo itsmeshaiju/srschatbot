@@ -139,16 +139,27 @@ input[type=checkbox] {
     $(".add-field", $(this)).click(function(e) {
         var count = $('#row_count').val();
         count++;
-        $('.multi-field:first-child', $wrapper).clone(true).appendTo($wrapper).find('input').val('').focus();
+        var $clonedElement = $('.multi-field:first-child', $wrapper).clone(true);
+        $clonedElement.appendTo($wrapper).find('input').val('').end().find('input[type="checkbox"]').val(count-1).prop('checked', false).end().find('input').first().focus();
         $('#row_count').val(count);
     });
     $('.multi-field .remove-field', $wrapper).click(function() {
-        if ($('.multi-field', $wrapper).length > 1)
-             var count = $('#row_count').val();
-             count--;
+        if ($('.multi-field', $wrapper).length > 1) {
+            var count = $('#row_count').val();
+            count--;
             $(this).parent('.multi-field').remove();
             $('#row_count').val(count);
+        }
     });
+});
+ 
+$('input[name="is_repeat[]"]').change(function() {
+  // Uncheck all checkboxes with the same name
+  $('input[name="is_repeat[]"]').prop('checked', false);
+  
+  // Check the clicked checkbox
+  $(this).prop('checked', true);
 });
 </script>
 @endsection
+

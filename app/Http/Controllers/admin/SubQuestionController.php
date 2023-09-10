@@ -97,12 +97,14 @@ class SubQuestionController extends Controller
         $answers = $request->get('answer');
         $nextQuestionIds = $request->get('next_question_id');
         $mainQuestionId = $request->get('main_question_id');
+        $is_repeat = $request->get('is_repeat');
 
         for ($i = 0; $i < $count - 1; $i++) {
             $input['question'] = $questions[$i];
             $input['answer'] = $answers[$i];
             $input['next_question_id'] = $nextQuestionIds[$i];
             $input['main_question_id'] = $mainQuestionId;
+            $input['is_repeat'] = (in_array($i, $is_repeat)) ? 1 : 0;
             SubQuestion::create($input);
         }
 

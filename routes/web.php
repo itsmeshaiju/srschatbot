@@ -51,6 +51,8 @@ Route::get('new-chat', [OpenAIController::class, 'newChatWindow'])->name('newCha
 //admin
 Route::get('admin/', [QuestionController::class,'index'])->name('admin.index');
 Route::resource('question', QuestionController::class);
+Route::post('first-question-status', [QuestionController::class, 'updateFirstQuestion'])->name('update.first.question');
+Route::post('Last-question-status', [QuestionController::class, 'updateLastQuestion'])->name('update.last.question');
 // Route::any('question/', [QuestionController::class,'index'])->name('admin.index');
 Route::resource('subquestion', SubQuestionController::class);
 

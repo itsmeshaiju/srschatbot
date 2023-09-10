@@ -13,6 +13,7 @@ use GuzzleHttp\Promise\Utils;
 use Exception;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\MailController;
+use App\Models\MasterQuestion;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
@@ -25,25 +26,26 @@ class OpenAIController extends Controller
     }
 
 
-    public function newChatWindow(Request $request){
+    public function newChatWindow(Request $request)
+    {
         return view('newChatWindow'); //return html file
     }
 
     public function getQuestions(Request $request) //ajax request for getting questions
     {
         try {
-            
-               
+
+
 
 
             $qtCount = Question::count(); //get all question count 
-            if (empty($qtCount)) { 
+            if (empty($qtCount)) {
                 throw new Exception("Questions are empty");
             }
             if ($request->qt_count == $qtCount) {  //checking this is last question or not
                 $question = [
                     'question_name' => 'Can we procceed ?',
-                    'options_html'=>'',
+                    'options_html' => '',
                     'id' => 0
                 ]; // create response for last question befor generating srs document
                 return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
@@ -83,7 +85,7 @@ class OpenAIController extends Controller
                 gptQuestionAnswer::where('user_id', auth()->user()->id)->delete(); //delete all question answer data after send mail 
                 $question = [
                     'question_name' => 'we will share you pdf shortly..have a nice day',
-                    'options_html'=>'',
+                    'options_html' => '',
                     'id' => 'shared_mail'
                 ]; // last reponse for after send registerd mail
                 return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
@@ -92,46 +94,45 @@ class OpenAIController extends Controller
         this block for get next questions based on  id order
         */
             $id = (isset($request->q_id) ? $request->q_id  : 0); //check id exists or not if id is null set value 0 then get first row 
-            $question = Question::select('id', 'question_name','options')->where('id', '>', $id)->orderBy('id')->first(); // getting next asking row
+            $question = Question::select('id', 'question_name', 'options')->where('id', '>', $id)->orderBy('id')->first(); // getting next asking row
             $options = "";
-           
-            if (isset($question->options) && $question->options != ''){
+
+            if (isset($question->options) && $question->options != '') {
 
                 $array = explode(",", $question->options);
-                $options .='<div class="row col-md-12">';
+                $options .= '<div class="row col-md-12">';
                 $i = 0;
-                foreach($array as $q){
-                    $input_id = '#btn_row_'.$i.'_'.$id;
-                    $html_id = 'btn_row_'.$i.'_'.$id;
-                    $options .='<div class="col-md-3"><button class="btn  btn-primary" id="'.$html_id.'" onclick="getButtonText(\''.$q.'\',\''.$input_id.'\')">'.ucwords($q).'</button></div>';
+                foreach ($array as $q) {
+                    $input_id = '#btn_row_' . $i . '_' . $id;
+                    $html_id = 'btn_row_' . $i . '_' . $id;
+                    $options .= '<div class="col-md-3"><button class="btn  btn-primary" id="' . $html_id . '" onclick="getButtonText(\'' . $q . '\',\'' . $input_id . '\')">' . ucwords($q) . '</button></div>';
                     $i++;
                 }
                 $options .= '</div>';
-               
             }
             $data = [
                 'answer' => $request->user_input,
                 'question' => $question->question_name
-                
+
             ]; // set ask question and answer to array active
             $json_data = json_encode($data); // convert to json 
             $res =  gptQuestionAnswer::create([
                 'question_and_answer' => $json_data,
-                'options_html'=>'',
+                'options_html' => '',
                 'user_id' => auth()->user()->id,
             ]); // insert to json data and logged user id  to table 
-            if(isset($res->id) == false){
+            if (isset($res->id) == false) {
                 throw new Exception("server error ");
             }
             $question['options_html'] = $options;
 
-            if($request->q_id == 2) {
+            if ($request->q_id == 2) {
 
-                $contant = 'Hi '.ucwords(Session::get('clilent_ask_name')).'   
-                '.$question['question_name'];
+                $contant = 'Hi ' . ucwords(Session::get('clilent_ask_name')) . '   
+                ' . $question['question_name'];
                 $question['question_name'] = $contant;
             }
-          
+
             return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return next question in  json format
         } catch (\Exception $e) {
             Log::channel('openai')->error($e);
@@ -140,13 +141,33 @@ class OpenAIController extends Controller
         }
     }
 
+    public function getBotQuestion(Request $request){
+       // $qtCount = MasterQuestion::count(); //get all question count 
+
+        if (empty($qtCount)) {
+            throw new Exception("Questions are empty");
+        }
+        $id = (isset($request->q_id) ? $request->q_id  : 0);
+        $masterquestion = MasterQuestion::select('id', 'question_name', 'options')->where('id', '>', $id)->orderBy('id')->first(); // getting next asking row
+        
+        // if ($request->qt_count == $qtCount) {  //checking this is last question or not
+        //     $question = [
+        //         'question_name' => 'Can we procceed ?',
+        //         'options_html' => '',
+        //         'id' => 0
+        //     ]; // create response for last question befor generating srs document
+        //     return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
+        // }
+
+    }
+
     /*
     this function for call chatgpt api and return response 
     */
     public function chatGpt(): JsonResponse
     {
         $qtArray = gptQuestionAnswer::select('question_and_answer')->where('user_id', auth()->user()->id)->orderBy('id')->get(); //get all logged  user  asked questions and answers
-        if (empty($qtArray)) { 
+        if (empty($qtArray)) {
             throw new Exception("Questions and answers  are empty");
         }
         $content = "";
@@ -184,10 +205,10 @@ class OpenAIController extends Controller
         ]);
         $data = json_decode($response->getBody(), true); //convert response to array
         $content = $data['choices'][0]['message']['content']; //take response text only
-        if (strlen($content) < 5){
+        if (strlen($content) < 5) {
             throw new Exception("response data is empty");
         }
-        
+
         $data = [
             'question' => 'create srs document',
             'answer' => $content
@@ -198,14 +219,14 @@ class OpenAIController extends Controller
             'question_and_answer' => $json_data,
             'user_id' => auth()->user()->id,
         ]); //save gpt response to table 
-        if(isset($res->id) == false){
+        if (isset($res->id) == false) {
             throw new Exception("server error ");
         }
         $content = str_replace('```', " ", $content); // replace unwanted stings
         $data['choices'][0]['message']['content'] = nl2br($content); // add <br> tag
         $question = [
             'question_name' => $data['choices'][0]['message']['content'] . '<br>  Shall we send this SRS document to your registered email ?',
-            'options_html'=>'',
+            'options_html' => '',
             'id' => 'send_mail'
         ]; // generate response for send mail 
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT); // return json data to view 

@@ -106,6 +106,8 @@
                             <th>No</th>
                             <th>Question</th>
                             <th>Status</th>
+                            <th>First Question</th>
+                            <th>Last Question</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -122,8 +124,40 @@
                             <tr>
                                 <td>{{ $i++ }}</td>
                                 <td>{{ $qt->question }}</td>
+                               
                                 <td>
                                     {!! $status !!}
+                                </td>
+                                <td>
+                                    @php
+                                   
+                                    $value = ($qt->is_first_question == 1) ? 0 : 1;
+                                    $btn = ($qt->is_first_question == 1) ? 
+                                    '<button type="submit" class="btn btn-danger">
+                                            <i class="fa fa-ban"></i> </button>':
+                                         '<button type="submit" class="btn btn-success"><i class="fa fa-check"></i>';
+                                    @endphp
+                                    <form action="{{ route('update.first.question') }}" method="POST">
+                                        @csrf
+                                        <input name="id" value="{{ $qt->id }}" type="hidden">
+                                        <input name="is_first_question" value="{{ $value }}" type="hidden">
+                                        {!! $btn !!}
+                                    </form>
+                                </td>
+                                <td>
+                                    @php
+                                    $value = ($qt->is_last_question == 1) ? 0 : 1;
+                                    $btn = ($qt->is_last_question == 1) ? 
+                                    '<button type="submit" class="btn btn-danger">
+                                            <i class="fa fa-ban"></i> </button>':
+                                         '<button type="submit" class="btn btn-success"><i class="fa fa-check"></i>';
+                                    @endphp
+                                    <form action="{{ route('update.last.question') }}" method="POST">
+                                        @csrf
+                                        <input name="id" value="{{ $qt->id }}" type="hidden">
+                                        <input name="is_last_question" value="{{ $value }}" type="hidden">
+                                        {!! $btn !!}
+                                    </form>
                                 </td>
                                 <td>
                                     <div class="btn-group">

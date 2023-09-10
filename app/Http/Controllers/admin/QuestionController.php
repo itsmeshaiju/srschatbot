@@ -37,6 +37,7 @@ class QuestionController extends Controller
            
          } else {
              $questions = MasterQuestion::all();
+             
          }
         
          $page_name = 'Questions';
@@ -127,5 +128,25 @@ class QuestionController extends Controller
         //set actvity log here
         return redirect()->route('category.index')
             ->with('success', 'Question deleted successfully');
+    }
+    public function updateFirstQuestion(Request $request){
+        MasterQuestion::updateAllRows(['is_first_question' => 0]);
+        $input['is_first_question'] = $request->is_first_question;
+        $question = MasterQuestion::find($request->id);
+        $question->update($input);
+        //set actvity log here
+        
+        return redirect()->route('question.index')
+            ->with('success', 'First question updated successfully');
+    }
+    public function updateLastQuestion(Request $request){
+        MasterQuestion::updateAllRows(['is_last_question' => 0]);
+        $input['is_last_question'] = $request->is_last_question;
+        $question = MasterQuestion::find($request->id);
+        $question->update($input);
+        //set actvity log here
+        
+        return redirect()->route('question.index')
+            ->with('success', 'Last question updated successfully');
     }
 }

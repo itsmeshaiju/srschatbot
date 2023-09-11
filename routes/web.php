@@ -40,6 +40,7 @@ Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('
 //Openai/ajax
 Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');//ajax url for  getting already created data from database
 
+
 //test
 Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');//created for testing functions
 // Route::get('/testchat', [OpenAIController_copy::class, 'index'])->name('index')->middleware('auth');
@@ -47,12 +48,14 @@ Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name
 //test
 Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');//created for testing functions
 Route::get('new-chat', [OpenAIController::class, 'newChatWindow'])->name('newChatWindow')->middleware('auth');//show chat window
+Route::get('test-api-qeustion', [OpenAIController::class, 'getBotQuestion'])->middleware('auth');
 
 //admin
 Route::get('admin/', [QuestionController::class,'index'])->name('admin.index');
 Route::resource('question', QuestionController::class);
 Route::post('first-question-status', [QuestionController::class, 'updateFirstQuestion'])->name('update.first.question');
-Route::post('Last-question-status', [QuestionController::class, 'updateLastQuestion'])->name('update.last.question');
+Route::post('last-question-status', [QuestionController::class, 'updateLastQuestion'])->name('update.last.question');
+Route::post('get-level-questions', [QuestionController::class, 'getLevelQuestions'])->name('get.level.question');
 // Route::any('question/', [QuestionController::class,'index'])->name('admin.index');
 Route::resource('subquestion', SubQuestionController::class);
 

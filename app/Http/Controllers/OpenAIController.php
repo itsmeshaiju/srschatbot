@@ -31,7 +31,7 @@ class OpenAIController extends Controller
         return view('newChatWindow'); //return html file
     }
 
-    public function getQuestions(Request $request) //ajax request for getting questions
+    public function getQuestions1(Request $request) //ajax request for getting questions
     {
         try {
 
@@ -141,23 +141,32 @@ class OpenAIController extends Controller
         }
     }
 
-    public function getBotQuestion(Request $request){
-       // $qtCount = MasterQuestion::count(); //get all question count 
-
-        if (empty($qtCount)) {
-            throw new Exception("Questions are empty");
-        }
+    public function getQuestions(Request $request){
+      
         $id = (isset($request->q_id) ? $request->q_id  : 0);
-        $masterquestion = MasterQuestion::select('id', 'question_name', 'options')->where('id', '>', $id)->orderBy('id')->first(); // getting next asking row
-        
-        // if ($request->qt_count == $qtCount) {  //checking this is last question or not
-        //     $question = [
-        //         'question_name' => 'Can we procceed ?',
-        //         'options_html' => '',
-        //         'id' => 0
-        //     ]; // create response for last question befor generating srs document
-        //     return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
-        // }
+        if ($id == 0) {
+            $masterquestion = MasterQuestion::select('*')->where('is_first_question', 1)->first(); 
+        }else{
+            $masterquestion = MasterQuestion::select('*')->where('id', $id)->first();
+        }
+      
+        $options = "";
+        $options .= '<div class="row col-md-12">';
+        $i = 0;
+        foreach ($masterquestion->subQuestion as $q) {
+            $input_id = '#btn_row_' . $i . '_' . $id;
+            $html_id = 'btn_row_' . $i . '_' . $id;
+            $options .= '<div class="col-md-3 ml-3"><button class="btn  btn-primary" id="' . $html_id . '" onclick="getButtonText(\'' . $q->id . '\',\'' . $q->question . '\',\'' . $input_id . '\')">' . ucwords($q->question) . '</button></div>';
+            $i++;
+        }
+        $options .= '</div>';
+            $question = [
+                'question_name' => $masterquestion->question,
+                'options_html' => $options,
+                'id' => 0
+            ]; // create response for last question befor generating srs document
+            return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
+
 
     }
 

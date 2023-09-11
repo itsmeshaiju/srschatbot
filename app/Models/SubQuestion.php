@@ -15,6 +15,8 @@ class SubQuestion extends Model
         'status',
         'main_question_id',
         'is_repeat',
+        'level_id',
+        'master_id'
     ];  
    
     public function mainQuestion()

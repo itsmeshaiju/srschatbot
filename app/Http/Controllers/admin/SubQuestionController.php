@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Level;
 use App\Models\MasterQuestion;
 use App\Models\SubQuestion;
 use Illuminate\Http\Request;
@@ -33,7 +34,11 @@ class SubQuestionController extends Controller
 
         $page_name = 'Sub Questions';
         $questions = MasterQuestion::all();
-        return view('admin.subQuestions.create', ['page_name' => $page_name, 'questions' => $questions]);
+        $levels = Level::all();
+        return view('admin.subQuestions.create', ['page_name' => $page_name, 
+        'questions' => $questions,
+        'levels'=>$levels,
+    ]);
     }
 
     /**
@@ -41,22 +46,26 @@ class SubQuestionController extends Controller
      */
     public function store(Request $request)
     {
-       //dd($request->all());
-
+       
         $count = $request->get('row_count');
         $questions = $request->get('question');
         $answers = $request->get('answer');
-        $nextQuestionIds = $request->get('next_question_id');
         $mainQuestionId = $request->get('main_question_id');
         $is_repeat = $request->get('is_repeat');
+        $is_repeat = isset($is_repeat) ? $is_repeat : [];
+        $level_id = $request->get('level');
+        $master_id = $request->get('main_question_id');
         
+      
 
         for ($i = 0; $i < $count; $i++) {
            
             $input['question'] = $questions[$i];
             $input['answer'] = $answers[$i];
-            $input['next_question_id'] = $nextQuestionIds[$i];
+            $input['next_question_id'] = 1;
             $input['main_question_id'] = $mainQuestionId;
+            $input['level_id'] = $level_id;
+            $input['master_id'] = $master_id;
             $input['is_repeat'] = (in_array($i, $is_repeat)) ? 1 : 0;
            
             SubQuestion::create($input);

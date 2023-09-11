@@ -327,13 +327,15 @@
     });
 
 
-    function getButtonText(data, html_id) {
-      $('#userInput').val(data);
+    function getButtonText(next_question_id,question,html_id) {
+      $('#userInput').val(question);
       $(html_id).addClass('btn-secondary').removeClass('btn-success');
-      getChatReplay();
+     
+      getChatReplay(next_question_id);
     }
 
-    function getChatReplay() {
+    function getChatReplay(next_question_id) {
+     
       var qt_count = $('#qt_count').val()
       $('#user-chat-div').show();
       $('#user-answer').append($('#userInput').val())
@@ -363,6 +365,7 @@
 `);
 
 
+
       var url = "{{ route('get.question') }}";
       $.ajax({
         url: url,
@@ -370,7 +373,7 @@
         data: {
           _token: '{{ csrf_token() }}',
           'user_input': $('#userInput').val(),
-          'q_id': $('#q_id').val(),
+          'q_id': next_question_id,
           'qt_count': qt_count,
 
 

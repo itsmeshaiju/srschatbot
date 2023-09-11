@@ -169,7 +169,8 @@ requirements?</div>
  });
  
 
- function getButtonText(data,html_id){
+ function getButtonText(next_question_id,html_id){
+  alert(next_question_id);
   $('#userInput').val(data);
   $(html_id).addClass('btn-secondary').removeClass('btn-success');
   getChatReplay();

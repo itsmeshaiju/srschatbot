@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MasterQuestion;
+use App\Models\SubQuestion;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
@@ -148,5 +149,16 @@ class QuestionController extends Controller
         
         return redirect()->route('question.index')
             ->with('success', 'Last question updated successfully');
+    }
+    public function getLevelQuestions(Request $request){
+        if($request->ajax()){
+            if($request->level == 1){
+                $questions = MasterQuestion::all();
+            }else{
+                $level = $request->level  - 1;
+                $questions = SubQuestion::where('level_id', $level)->get();
+            }
+        return response()->json($questions);
+        }
     }
 }

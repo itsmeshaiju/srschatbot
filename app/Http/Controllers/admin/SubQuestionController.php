@@ -79,6 +79,7 @@ class SubQuestionController extends Controller
      */
     public function show(string $id)
     {
+        
         $subQuestion = MasterQuestion::find($id);
         $page_name = 'Questions';
         return view('admin.subQuestions.show', compact('subQuestion', 'page_name'));

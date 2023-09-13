@@ -53,6 +53,7 @@
             <!-- /.card-header -->
             <!-- form start -->
             {!! Form::open(['route' => 'subquestion.store', 'method' => 'POST']) !!}
+            <input type="hidden" id="main_question_id" name="main_question_id">
             <div class="card-body">
                 <div class="col-xs-12 col-sm-12 col-md-12 row">
                     <input type="hidden" id="row_count" name="row_count" value="1">
@@ -63,7 +64,7 @@
                                 <select class="form-control select2 select2-hidden-accessible" onchange="getQuestion()"
                                     id="level" name="level" style="width: 100%;" data-select2-id="1" tabindex="-1"
                                     aria-hidden="true" required>
-                                    <option selected="selected" value="">-- Select --</option>
+                                    
                                     @foreach ($levels as $lv)
                                         <option value="{{ $lv->id }}">{{ $lv->name }}</option>
                                     @endforeach
@@ -73,9 +74,9 @@
                         <div class="col-md-4 ml-2">
                             <div class="form-group">
                                 <strong>Questions:</strong>
-                                <select class="form-control select2 select2-hidden-accessible" id="main_question_id_1"
-                                    name="main_question_id" style="width: 100%;" data-select2-id="1" tabindex="-1"
-                                    aria-hidden="true" required>
+                                <select class="form-control select2 select2-hidden-accessible" onchange="getSubQuestion(0)"
+                                    id="main_question_id_0" name="main_question_id_01" style="width: 100%;"
+                                    data-select2-id="1" tabindex="-1" aria-hidden="true" required>
                                     <option selected="selected" value="">-- Select --</option>
                                     @foreach ($questions as $qt)
                                         <option value="{{ $qt->id }}">{{ $qt->question }}</option>
@@ -86,7 +87,7 @@
                         </div>
                     </div>
                     <div id="dynamic_slect_field" class="col-md-12 ml-1 row">
-                    
+
                     </div>
                 </div>
                 <div class="multi-field-wrapper col-md-12 mt-4">
@@ -148,6 +149,8 @@
 
 @endsection
 @section('scripts')
+
+
     <script>
         $('.multi-field-wrapper').each(function() {
             var $wrapper = $('.multi-fields', this);
@@ -178,7 +181,8 @@
         });
 
         function getQuestion() {
-          dynamicSelectFunction();
+           
+            dynamicSelectFunction();
             var url = "{{ route('get.level.question') }}";
             $.ajax({
                 url: url,
@@ -202,24 +206,64 @@
             });
         }
 
+        function getSubQuestion(id) {
+            //===============get level count and html value append on slected===============
+            count = $('#level').val();
+            count = count - 1;
+            last_html_id = '#main_question_id_' + count;
+            last_option_val = $(last_html_id).val();
+            $('#main_question_id').val(last_option_val);
+            //==========================
+            html_id = '#main_question_id_' + id;
+            next_id_no = parseInt(id) + 1;
+            appending_html_id = '#main_question_id_' + next_id_no;
+            var qt_id = $(html_id).val();
+            var url = "{{ route('get.master.sub.questions') }}";
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    'qt_id': qt_id,
+                },
+                cache: true,
+                success: function(data) {
+                    // Clear existing options from the select box
+                    $(appending_html_id).empty();
+
+                    // Append new options to the select box
+                    $(appending_html_id).append('<option value="">--Select--</option>');
+                    $.each(data, function(index, qt) {
+                        $(appending_html_id).append('<option value="' + qt.id + '">' + qt.question +
+                            '</option>');
+                    });
+                }
+            });
+        }
+
+
+
+
         function dynamicSelectFunction() {
-          count = $('#level').val();
-          count = count - 1;
-          $('#dynamic_slect_field').empty();
-          for (var i = 0; i < count; i++) {
-          $('#dynamic_slect_field').append(`<div class="col-md-4 ml-2">
+            count = $('#level').val();
+            count = count - 1;
+            $('#dynamic_slect_field').empty();
+            for (var i = 0; i < count; i++) {
+                var id_count = i + 1;
+                var html_id = "main_question_id_" + id_count;
+
+                $('#dynamic_slect_field').append(`<div class="col-md-4">
                             <div class="form-group">
-                                <strong>Questions:</strong>
-                                <select class="form-control select2 select2-hidden-accessible" id="main_question_id"
-                                    name="main_question_id" style="width: 100%;" data-select2-id="1" tabindex="-1"
+                                <strong>Level ` + id_count + `  Questions:</strong>
+                                <select class="form-control select2 select2-hidden-accessible" id="` + html_id + `"
+                                    onchange="getSubQuestion(` + id_count + `)" name="main_question_id_` + id_count + `" style="width: 100%;" data-select2-id="1" tabindex="-1"
                                     aria-hidden="true" required>
                                     <option selected="selected" value="">-- Select --</option>
 
                                 </select>
                             </div>
                         </div>`);
-                      }
+            }
         }
-
     </script>
 @endsection

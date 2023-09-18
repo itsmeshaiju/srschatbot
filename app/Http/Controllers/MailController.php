@@ -10,34 +10,27 @@ use Log;
 
 class MailController extends Controller
 {
-//The sendMail function is used to send the pdf file to registered mail address.
-    public function sendMail($content, $mail_header, $to_mail, $subject, $type, $file_name)
+
+
+    public function sendMail($attachment,$content,$to_mail,$subject,$is_attach,$file_name)
     {
-        try 
-        {
-            if ($type == 'attach') 
+
+        
+        if ($is_attach == true) {
+            Mail::raw($content, function ($message) use ($to_mail, $subject, $attachment, $file_name)
             {
-                Mail::raw($mail_header, function ($message) use ($to_mail, $subject, $content, $file_name) {
-                    $message->to($to_mail)
-                        ->subject($subject)
-                        ->attach($content, ['as' => $file_name]);
-                });
-                return 'Email sent with PDF attachment.';
-            } 
-            else 
+            $message->to($to_mail) // Specify the recipient's email
+                ->subject($subject) // Specify the email subject 
+                ->attach($attachment, ['as' => $file_name]); // Specify the file path of the PDF attachment
+        });
+        return 'Email sent with PDF attachment.';
+        }else{
+            Mail::raw($content, function ($message) use ($to_mail, $subject, $attachment, $file_name)
             {
-                Mail::raw($mail_header, function ($message) use ($to_mail, $subject, $content, $file_name) {
-                    $message->to($to_mail)
-                        ->subject($subject)
-                        ->attach($content, ['as' => $file_name]);
-                });
-                return 'Email sent without PDF attachment.';
-            }
-        } 
-        catch (Exception $e) 
-        {
-            // Handle the exception as per your requirements
-            return 'Failed to send email: ' . $e->getMessage();
+            $message->to($to_mail) // Specify the recipient's email
+                ->subject($subject); // Specify the email subject 
+        });
+        return 'Email sent with PDF attachment.';
         }
     }
 

@@ -128,4 +128,10 @@ return [
         ],
     ],
 
+    'openai' => [
+        'driver' => 'single',
+        'path' => storage_path('logs/openai_error.log'),
+        'level' => 'error',
+    ],
+
 ];

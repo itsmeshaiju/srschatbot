@@ -21,10 +21,12 @@
  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
  <style>
-  tml {
+  html {
   background: #CCD0D4;
   min-height: 100%;
 }
+/* Style the active class, and buttons on mouse-over */
+
 
 body {
   min-height: 100%;
@@ -132,6 +134,7 @@ requirements?</div>
 
 </div>
 <div class="bot-message" id="bot_msg">
+  
 
 
 </div>
@@ -152,17 +155,33 @@ requirements?</div>
  
  </div>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css">
+
  <script>
  const sendButton = document.getElementById("sendButton");
  // Event listener for send button click
  $("#userInput").on('keyup', function (e) {
   
   if ((e.key === 'Enter' || e.keyCode === 13) && $('#userInput').val() != "" ) {
-       
-    
-        var qt_count =  $('#qt_count').val()
+    getChatReplay();
+      }
+ });
+ 
+
+ function getButtonText(next_question_id,html_id){
+  alert(next_question_id);
+  $('#userInput').val(data);
+  $(html_id).addClass('btn-secondary').removeClass('btn-success');
+  getChatReplay();
+ }
+
+ function getChatReplay() {
+  var qt_count =  $('#qt_count').val()
         $('#user-answer').append( $('#userInput').val())
         $('#user-answer').attr('id', '');
+        $('#bot-question').attr('id', '');
+        $('#button-row').attr('id', '');
         $('#loader').show();
         $('#sendButton').prop('disabled', true);
         var url = "{{ route('get.question') }}";
@@ -183,21 +202,50 @@ requirements?</div>
               new_count = parseInt(qt_count) + 1
                 $('#loader').hide();
                 $('#sendButton').prop('disabled', false);
-                contant  = data['question_name']
+                contant  = data['question_name'];
+                html_contant = '<br><br><br>'+data['options_html'];
                 q_id = data['id']
-                $('#bot_msg').append('<br><br>Bot: ' + contant + '<br><br><div id="user-answer" class="bot-message text-success" style="text-align: right"></div>')
+                $('#bot_msg').append('<div id="bot-question"><br><br>Bot: <br><br></div><div id="button-row"></div><div id="user-answer" class="bot-message text-success" style="text-align: right"></div>')
+                typeWriter(contant,html_contant)
+                // $('#bot-question').text(contant);
                 $('#sendButton').prop('disabled', false);
                 $('#q_id').val(q_id)
                 $('#qt_count').val(new_count)
                 $('#userInput').val('')
+                
+    
+               
             },
             error: function(error) {
-                $('#loader').hide();
-                console.log(data)
+              toastr.error('Something went wrong.Try again later..!', 'Failed!');
             }
         });
-      }
- });
+  }
+
+  
  
+
+  function typeWriter(content, html_content) {
+  var text = content;
+  var speed = 5; // Typing speed (in milliseconds)
+  var delay = 2000; // Delay between typing and erasing (in milliseconds)
+  var container = document.getElementById("bot-question");
+  var i = 0;
+  var interval = setInterval(function() {
+    if (i < text.length) {
+      container.textContent += text.charAt(i);
+      i++;
+    } else {
+      clearInterval(interval); // Stop the typing animation
+      setTimeout(function() {
+        $('#button-row').append(html_content); // Append the HTML content after the delay
+      }, delay);
+    }
+  }, speed);
+
+  // Preserve line breaks
+  container.style.whiteSpace = 'pre-line';
+}
+  
  </script>
 @endsection

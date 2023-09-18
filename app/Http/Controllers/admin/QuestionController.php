@@ -171,4 +171,10 @@ class QuestionController extends Controller
             return response()->json($questions);
         }
     }
+    public function masterQuestionsAndSubQuestions(Request $request){
+        if ($request->ajax()) {
+            $sub_question = SubQuestion::where('main_question_id', $request->main_question_id)->where('level_id','!=',1)->get();
+            return response()->json($sub_question);
+        }
+    }
 }

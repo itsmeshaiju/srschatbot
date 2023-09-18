@@ -57,6 +57,7 @@ Route::post('first-question-status', [QuestionController::class, 'updateFirstQue
 Route::post('last-question-status', [QuestionController::class, 'updateLastQuestion'])->name('update.last.question');
 Route::post('get-level-questions', [QuestionController::class, 'getLevelQuestions'])->name('get.level.question');
 Route::post('get-master-sub-questions', [QuestionController::class, 'getMasterSubQuestions'])->name('get.master.sub.questions');
+Route::post('master-questions-and-sub-questions', [QuestionController::class, 'masterQuestionsAndSubQuestions'])->name('master.questions.and.sub.questions');
 // Route::any('question/', [QuestionController::class,'index'])->name('admin.index');
 Route::resource('subquestion', SubQuestionController::class);
 

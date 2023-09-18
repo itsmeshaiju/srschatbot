@@ -78,11 +78,12 @@ class SubQuestionController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        
-        $subQuestion = MasterQuestion::find($id);
+    {   
+        $master_question = MasterQuestion::find($id);
+       $sub_question = SubQuestion::where('main_question_id', $id)->where('level_id',1)->get();
+    //    dd($master_question,$sub_question);
         $page_name = 'Questions';
-        return view('admin.subQuestions.show', compact('subQuestion', 'page_name'));
+        return view('admin.subQuestions.show-copy', compact('master_question','sub_question', 'page_name'));
     }
 
     /**

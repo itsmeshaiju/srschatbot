@@ -198,6 +198,7 @@
 
                     // Append new options to the select box
                     $('#main_question_id').append('<option value="">--Select--</option>');
+                    
                     $.each(data, function(index, qt) {
                         $('#main_question_id').append('<option value="' + qt.id + '">' + qt.question +
                             '</option>');
@@ -230,7 +231,6 @@
                 success: function(data) {
                     // Clear existing options from the select box
                     $(appending_html_id).empty();
-
                     // Append new options to the select box
                     $(appending_html_id).append('<option value="">--Select--</option>');
                     $.each(data, function(index, qt) {

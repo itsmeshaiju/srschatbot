@@ -18,7 +18,7 @@ class MasterQuestion extends Model
 
     public function subQuestion()
     {
-        return $this->hasMany(subQuestion::class,'main_question_id');
+        return $this->hasMany(subQuestion::class,'master_id');
     }
 
     public static function updateAllRows($newValues)

@@ -149,20 +149,24 @@
                 <div class="card-header">
                     <h3 class="card-title">About {{ $page_name }}</h3>
                 </div>
-
-
                 <div class="card-body">
-
-
-
-
                     <div class="container">
                         <ul>
                             <li>
-                                <input type="checkbox" id="frontend" onclick="appendHtml()">
-                                <label for="frontend">Front-end</label>
-                                <div id="subchild-frontend1">
-
+                                <input type="checkbox" id="main_branch_{{ $master_question->id }}" onclick="appendHtml()">
+                                <label for="main_branch_{{ $master_question->id }}">{{ $master_question->question }}</label>
+                                <div id="subchild_main_branch_{{ $master_question->id }}">
+                                    <ul>
+                                        @foreach ($sub_question as $sub_qt)
+                                            <li>
+                                                <input type="checkbox" onclick="appendHtml({{ $sub_qt->id }})"
+                                                    id="sub_child_id_{{ $sub_qt->id }}">
+                                                <label
+                                                    for="sub_child_id_{{ $sub_qt->id }}">{{ $sub_qt->question }}</label>
+                                            </li>
+                                         
+                                        @endforeach
+                                    </ul>
                                 </div>
                             </li>
                         </ul>
@@ -175,53 +179,54 @@
     <script>
         var count = 0;
 
-        function appendHtml() {
-            count = count + 1;
-            html_id = '#subchild-frontend' + count;
-            next_html_id = count+1;
-            $(html_id).empty();
-            $(html_id).append(`
 
-  <ul>
-      <li>
-                      <input type="checkbox" onclick="appendHtml()" id="css`+count+`">
-                      <label for="css`+count+`">CSS</label>
-                      <ul>
-                          <li>
-                              <label for="">SASS</label>
-                          </li>
-                          <li>
-                              <label for="">LESS</label>
-                          </li>
-                          <li>
-                            <input type="checkbox" onclick="appendHtml()" id="test11`+count+`">
-                              <label for="test11">Stylus <br> test11</label>
-                          </li>
-                      </ul>
-                    </li>
-                    <li>
-                      <input type="checkbox" onclick="appendHtml()" id="css1`+count+`">
-                      <label for="css`+count+`">CSS1</label>
-                      <ul>
-                          <li>
-                            <input type="checkbox" onclick="appendHtml()" id="css1`+count+`">
-                              <label for="">SASS</label>
-                          </li>
-                          <li>
-                            <input type="checkbox" onclick="appendHtml()" id="less`+count+`">
-                              <label for="less">LESS</label>
-                          </li>
-                          <li>
-                            <input type="checkbox" onclick="appendHtml()" id="test`+count+`">
-                              <label for="test">Stylus <br> test</label>
-                          </li>
-                      </ul>
-                    </li>
-                    </ul>
-                    <div id="subchild-frontend`+next_html_id+`">
+        $('input[type="checkbox"]').on('click', function() {
+          alert('ssss');
+    // if ($(this).is(':checked')) {
+    //   var value = $(this).val();
+    //   console.log(value);
+    // }
+  });
 
+
+
+        function appendHtml(main_question_id) {
+            var html_id = "#sub_child_id_" + main_question_id;
+            var url = "{{ route('master.questions.and.sub.questions') }}";
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    'main_question_id': main_question_id,
+                },
+                cache: true,
+                success: function(data) {
+                    $(html_id).empty();
+
+                    $(html_id).append(`
+                        <ul>`);
+                    Object.keys(data).forEach(function(key) {
+                        $(html_id).append(`
+                      
+                        <input type="checkbox" onclick="appendHtml(` + data[key]['id'] + `)"
+                            id="sub_child_id_` + data[key]['id'] + `">
+                        <label
+                            for="sub_child_id_` + data[key]['id'] + `">` + data[key]['question'] + `</label>
+                        </li>
+                        </ul>
+                    <div id="subchild-next-div_` + data[key]['id'] + `">
                       </div>
                     `);
+
+                       
+                    });
+
+
+
+                }
+            });
+
         }
     </script>
 @endsection

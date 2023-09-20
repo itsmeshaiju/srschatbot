@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MasterQuestion;
 use App\Models\SubQuestion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 class QuestionController extends Controller
 {
@@ -15,6 +16,8 @@ class QuestionController extends Controller
 
     public function index(Request $request)
     {
+       
+        
         $filterQuestion = "";
         $filterStatus = "";
 
@@ -169,15 +172,15 @@ class QuestionController extends Controller
             $master_id = $request->qt_id;
             
             if($request->level == 0){
-                $questions = SubQuestion::where('main_question_id', $master_id)->where('level_id',1)->get();
+                $questions = SubQuestion::where('master_id', $master_id)->where('level_id',1)->get();
               
             }else{
-                $questions = SubQuestion::where('main_question_id', $master_id)->where('level_id','!=',1)->get();
+                $questions = SubQuestion::where('master_id', $master_id)->where('level_id','!=',1)->get();
             }
            
             if (count($questions)  > 0 ){
                 foreach($questions as $qt){
-                    $qt_count = SubQuestion::where('main_question_id', $qt->id)->where('level_id','!=',1)->count();
+                    $qt_count = SubQuestion::where('master_id', $qt->id)->where('level_id','!=',1)->count();
                     $qt['is_sub_qt'] = ($qt_count > 0 ) ? 1  : 0 ;
                     
 
@@ -191,7 +194,7 @@ class QuestionController extends Controller
       
         if ($request->ajax()) {
            
-                $sub_question = SubQuestion::where('main_question_id', $request->main_question_id)->where('level_id','!=',1)->get();
+                $sub_question = SubQuestion::where('master_id', $request->main_question_id)->where('level_id','!=',1)->get();
             
            
             return response()->json($sub_question);

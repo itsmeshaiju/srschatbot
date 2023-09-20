@@ -36,10 +36,9 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout')->middlew
 Route::get('/', [OpenAIController::class, 'index'])->name('index')->middleware('auth');//show chat window
 
 
-
+Route::middleware(['auth','public.user'])->group(function () {
 //Openai/ajax
 Route::post('get-question', [OpenAIController::class, 'getQuestions'])->name('get.question')->middleware('auth');//ajax url for  getting already created data from database
-
 
 //test
 Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name('test.api')->middleware('auth');//created for testing functions
@@ -50,8 +49,13 @@ Route::get('test-api', [apiTestController::class, 'fetchChatCompletions'])->name
 Route::get('new-chat', [OpenAIController::class, 'newChatWindow'])->name('newChatWindow')->middleware('auth');//show chat window
 Route::get('test-api-qeustion', [OpenAIController::class, 'getBotQuestion'])->middleware('auth');
 
+});
+Route::middleware(['auth','is.admin'])->group(function () {
+   
+    
+    Route::prefix('admin/')->group(function () {
 //admin
-Route::get('admin/', [QuestionController::class,'index'])->name('admin.index');
+Route::get('/', [QuestionController::class,'index'])->name('admin.index');
 Route::resource('question', QuestionController::class);
 Route::post('first-question-status', [QuestionController::class, 'updateFirstQuestion'])->name('update.first.question');
 Route::post('last-question-status', [QuestionController::class, 'updateLastQuestion'])->name('update.last.question');
@@ -60,4 +64,5 @@ Route::post('get-master-sub-questions', [QuestionController::class, 'getMasterSu
 Route::post('master-questions-and-sub-questions', [QuestionController::class, 'masterQuestionsAndSubQuestions'])->name('master.questions.and.sub.questions');
 // Route::any('question/', [QuestionController::class,'index'])->name('admin.index');
 Route::resource('subquestion', SubQuestionController::class);
-
+ });
+ });

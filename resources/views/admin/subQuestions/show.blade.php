@@ -150,46 +150,22 @@
                     <h3 class="card-title">About {{ $page_name }}</h3>
                 </div>
                 <div class="card-body">
-                    <div class="container">
-                        <ul>
-                            <li>
-                                <input type="checkbox" id="main_branch_{{ $master_question->id }}" onclick="appendHtml()">
-                                <label for="main_branch_{{ $master_question->id }}">{{ $master_question->question }}</label>
-                                <div id="subchild_main_branch_{{ $master_question->id }}">
-                                    <ul>
-                                        @foreach ($sub_question as $sub_qt)
-                                            <li>
-                                                <input type="checkbox" onclick="appendHtml({{ $sub_qt->id }})"
-                                                    id="sub_child_id_{{ $sub_qt->id }}">
-                                                <label
-                                                    for="sub_child_id_{{ $sub_qt->id }}">{{ $sub_qt->question }}</label>
-                                            </li>
-                                         
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
+                    <strong><i class="fa fa-question-circle mr-1"></i> Question</strong>
+                    <p class="text-muted">
+                    {{ $sub_question->question }}
+                    </p>
+                    <hr>
+                    <strong><i class="fa fa-reply" aria-hidden="true"></i> Answer</strong>
+                    <p class="text-muted">
+                    {{ $sub_question->answer }}
+                    </p>
                     </div>
-                </div>
             </div><!-- /.container-fluid -->
     </section>
 @endsection
 @section('scripts')
     <script>
         var count = 0;
-
-
-        $('input[type="checkbox"]').on('click', function() {
-          alert('ssss');
-    // if ($(this).is(':checked')) {
-    //   var value = $(this).val();
-    //   console.log(value);
-    // }
-  });
-
-
-
         function appendHtml(main_question_id) {
             var html_id = "#sub_child_id_" + main_question_id;
             var url = "{{ route('master.questions.and.sub.questions') }}";

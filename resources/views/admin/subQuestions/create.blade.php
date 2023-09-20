@@ -229,6 +229,15 @@
                 },
                 cache: true,
                 success: function(data) {
+                    if (data.length == 0) {
+                        $(document).Toasts('create', {
+                            class: 'bg-warning',
+                            title: 'Warning',
+                            body: 'Subquestion is Empty',
+                            autohide: true,
+                            delay: 3000
+                        })
+                    }
                     // Clear existing options from the select box
                     $(appending_html_id).empty();
                     // Append new options to the select box

@@ -16,10 +16,12 @@ class SubQuestionController extends Controller
     public function index(Request $request)
     {
         $mainQuestions = MasterQuestion::whereHas('SubQuestion')->get();
-
-        // $mainQuestions = MasterQuestion::all();
+        $questions = MasterQuestion::all();
+        $levels = Level::all();
         $page_name = 'Sub Questions';
         return view('admin.subQuestions.index', [
+            'questions' => $questions,
+            'levels' => $levels,
             'page_name' => $page_name,
             'mainQuestions' => $mainQuestions, // Retrieve the filtered results
         ]);
@@ -35,10 +37,11 @@ class SubQuestionController extends Controller
         $page_name = 'Sub Questions';
         $questions = MasterQuestion::all();
         $levels = Level::all();
-        return view('admin.subQuestions.create', ['page_name' => $page_name, 
-        'questions' => $questions,
-        'levels'=>$levels,
-    ]);
+        return view('admin.subQuestions.create', [
+            'page_name' => $page_name,
+            'questions' => $questions,
+            'levels' => $levels,
+        ]);
     }
 
     /**
@@ -46,7 +49,7 @@ class SubQuestionController extends Controller
      */
     public function store(Request $request)
     {
-       
+
         $count = $request->get('row_count');
         $questions = $request->get('question');
         $answers = $request->get('answer');
@@ -55,11 +58,11 @@ class SubQuestionController extends Controller
         $is_repeat = isset($is_repeat) ? $is_repeat : [];
         $level_id = $request->get('level');
         $master_id = $request->get('main_question_id');
-        
-      
+
+
 
         for ($i = 0; $i < $count; $i++) {
-           
+
             $input['question'] = $questions[$i];
             $input['answer'] = $answers[$i];
             $input['next_question_id'] = 1;
@@ -67,7 +70,7 @@ class SubQuestionController extends Controller
             $input['level_id'] = $level_id;
             $input['master_id'] = $master_id;
             $input['is_repeat'] = (in_array($i, $is_repeat)) ? 1 : 0;
-           
+
             SubQuestion::create($input);
         }
 
@@ -78,12 +81,10 @@ class SubQuestionController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {   
-        $master_question = MasterQuestion::find($id);
-       $sub_question = SubQuestion::where('main_question_id', $id)->where('level_id',1)->get();
-    //    dd($master_question,$sub_question);
+    {
+        $sub_question = SubQuestion::find($id);
         $page_name = 'Questions';
-        return view('admin.subQuestions.show-copy', compact('master_question','sub_question', 'page_name'));
+        return view('admin.subQuestions.show', compact('sub_question', 'page_name'));
     }
 
     /**
@@ -91,10 +92,9 @@ class SubQuestionController extends Controller
      */
     public function edit(string $id)
     {
-        $mainQuestion = MasterQuestion::find($id);
-        $questions = MasterQuestion::all();
+        $question = SubQuestion::find($id);
         $page_name = 'Sub Questions';
-        return view('admin.SubQuestions.edit', compact('questions', 'mainQuestion', 'page_name'));
+        return view('admin.SubQuestions.edit', compact('question', 'page_name'));
     }
 
     /**
@@ -102,24 +102,15 @@ class SubQuestionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-       $res =  SubQuestion::where('main_question_id', $id)->delete();
-        $count = $request->get('row_count');
-        $questions = $request->get('question');
-        $answers = $request->get('answer');
-        $nextQuestionIds = $request->get('next_question_id');
-        $mainQuestionId = $request->get('main_question_id');
-        $is_repeat = $request->get('is_repeat');
 
-        for ($i = 0; $i < $count - 1; $i++) {
-            $input['question'] = $questions[$i];
-            $input['answer'] = $answers[$i];
-            $input['next_question_id'] = $nextQuestionIds[$i];
-            $input['main_question_id'] = $mainQuestionId;
-            $input['is_repeat'] = (in_array($i, $is_repeat)) ? 1 : 0;
-            SubQuestion::create($input);
-        }
+        $this->validate($request, [
+            'question' => 'required',
+        ]);
 
-        return redirect()->route('subquestion.index') ->with('success', 'Sub Question updated successfully');;
+        $input = $request->all();
+        $question = SubQuestion::find($id);
+        $question->update($input);
+        return redirect()->route('subquestion.index')->with('success', 'Sub Question updated successfully');;
     }
 
     /**

@@ -53,7 +53,6 @@ class SubQuestionController extends Controller
         $count = $request->get('row_count');
         $questions = $request->get('question');
         $answers = $request->get('answer');
-        $mainQuestionId = $request->get('main_question_id');
         $is_repeat = $request->get('is_repeat');
         $is_repeat = isset($is_repeat) ? $is_repeat : [];
         $level_id = $request->get('level');
@@ -65,8 +64,6 @@ class SubQuestionController extends Controller
 
             $input['question'] = $questions[$i];
             $input['answer'] = $answers[$i];
-            $input['next_question_id'] = 1;
-            $input['main_question_id'] = $mainQuestionId;
             $input['level_id'] = $level_id;
             $input['master_id'] = $master_id;
             $input['is_repeat'] = (in_array($i, $is_repeat)) ? 1 : 0;

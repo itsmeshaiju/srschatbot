@@ -226,6 +226,7 @@
                 data: {
                     _token: '{{ csrf_token() }}',
                     'qt_id': qt_id,
+                    'level':id
                 },
                 cache: true,
                 success: function(data) {

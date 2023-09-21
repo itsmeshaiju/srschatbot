@@ -14,6 +14,8 @@ use Exception;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\MailController;
 use App\Models\MasterQuestion;
+use App\Models\SubQuestion;
+use Dompdf\Options;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
@@ -142,32 +144,34 @@ class OpenAIController extends Controller
     }
 
     public function getQuestions(Request $request){
-      
         $id = (isset($request->q_id) ? $request->q_id  : 0);
         if ($id == 0) {
             $masterquestion = MasterQuestion::select('*')->where('is_first_question', 1)->first(); 
+            $masterquestion->is_repeat = 0;
+            $subQuestions =  $masterquestion->subQuestion;
         }else{
-            $masterquestion = MasterQuestion::select('*')->where('id', $id)->first();
+            $masterquestion = SubQuestion::select('*')->where('id', $id)->first();
+            $subQuestions =  $masterquestion->subQuestionList($masterquestion->id);
         }
       
         $options = "";
         $options .= '<div class="row col-md-12">';
         $i = 0;
-        foreach ($masterquestion->subQuestion as $q) {
+        foreach ($subQuestions as $q) {
             $input_id = '#btn_row_' . $i . '_' . $id;
             $html_id = 'btn_row_' . $i . '_' . $id;
-            $options .= '<div class="col-md-3 ml-3"><button class="btn  btn-primary" id="' . $html_id . '" onclick="getButtonText(\'' . $q->id . '\',\'' . $q->question . '\',\'' . $input_id . '\')">' . ucwords($q->question) . '</button></div>';
+            $options .= '<div class="col-md-3 ml-3 mb-2 mt-2 text-center"><button class="btn btn-sm  btn-primary" id="' . $html_id . '" onclick="getButtonText(\'' . $q->id . '\',\'' . $q->question . '\',\'' . $input_id . '\')">' . ucwords($q->question) . '</button></div>';
             $i++;
         }
         $options .= '</div>';
             $question = [
                 'question_name' => $masterquestion->question,
+                'answer' => (isset($masterquestion->answer) ? $masterquestion->answer : ''),
+                'is_repeat' => $masterquestion->is_repeat,
                 'options_html' => $options,
                 'id' => 0
             ]; // create response for last question befor generating srs document
             return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
-
-
     }
 
     /*
@@ -239,5 +243,17 @@ class OpenAIController extends Controller
             'id' => 'send_mail'
         ]; // generate response for send mail 
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT); // return json data to view 
+    }
+
+
+    public function lastQuestion(){
+
+        $question = [
+            'question_name' => $masterquestion->question,
+            'answer' => (isset($masterquestion->answer) ? $masterquestion->answer : ''),
+            'options_html' => $options,
+            'id' => 0
+        ]; // create response for last question befor generating srs document
+        return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
     }
 }

@@ -116,8 +116,8 @@
       </div>
     </div> -->
     <div class="app-main">
+      <input id="is_repeat" type="text" value="0">
       <div id="bot-user-chat" class="chat-wrapper">
-
         <div class="message-wrapper">
           <img class="message-pp" src="https://images.unsplash.com/photo-1587080266227-677cc2a4e76e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&amp;ixlib=rb-1.2.1&amp;auto=format&amp;fit=crop&amp;w=934&amp;q=80" alt="profile-pic">
           <div class="message-box-wrapper">
@@ -318,6 +318,7 @@
 
   <script>
     const sendButton = document.getElementById("sendButton");
+    var repeatedData = []; 
     // Event listener for send button click
     $("#userInput").on('keyup', function(e) {
 
@@ -335,8 +336,85 @@
     }
 
     function getChatReplay(next_question_id) {
-     
       var qt_count = $('#qt_count').val()
+      appendChatHtml();
+      var url = "{{ route('get.question') }}";
+      $.ajax({
+        url: url,
+        method: "POST",
+        data: {
+          _token: '{{ csrf_token() }}',
+          'user_input': $('#userInput').val(),
+          'q_id': next_question_id,
+          'qt_count': qt_count,
+          'is_repeat' : $('#is_repeat').val(),
+        },
+        cache: true,
+        success: function(data) {
+          new_count = parseInt(qt_count) + 1
+          $('#loader').hide();
+          $('#sendButton').prop('disabled', false);
+          $('#is_repeat').val(data['is_repeat']),
+          contant = '<h6 class="text-center">' + data['question_name'] + '</h6>' + '<b>' + data['answer'] + '</b>' + data['options_html'];
+          var contentArray = contant.split("</p>");
+          q_id = data['id']
+          $("#bot-question").empty();
+          if (contentArray.length > 1) {
+            contentArray.forEach(function(option, index) {
+              setTimeout(function() {
+                
+                $('#bot-question').append(option);
+              }, 1000 * index);
+            });
+            $("#bot-question").removeClass("blinker");
+          } else {
+            $('#bot-question').append(contant);
+
+          }
+
+
+          // $('#bot-question').append(contant);
+          // typeWriter(contant, html_contant)
+          // $('#bot-question').text(contant);
+          $('#sendButton').prop('disabled', false);
+          $('#q_id').val(q_id)
+          $('#qt_count').val(new_count)
+          $('#userInput').val('')
+       
+        
+        // const element = document.getElementById('parentElement');
+        // const childElement = document.getElementById('childElement');
+        // element.scrollTop = childElement.offsetTop;
+        },
+        error: function(error) {
+          toastr.error('Something went wrong.Try again later..!', 'Failed!');
+        }
+      });
+    }
+    function typeWriter(content, html_content) {
+      var text = content;
+      var speed = 5; // Typing speed (in milliseconds)
+      var delay = 2000; // Delay between typing and erasing (in milliseconds)
+      var container = document.getElementById("bot-question");
+      var i = 0;
+      var interval = setInterval(function() {
+        if (i < text.length) {
+          container.textContent += text.charAt(i);
+          i++;
+        } else {
+          clearInterval(interval); // Stop the typing animation
+          setTimeout(function() {
+            $('#button-row').append(html_content); // Append the HTML content after the delay
+          }, delay);
+        }
+      }, speed);
+
+      // Preserve line breaks
+      container.style.whiteSpace = 'pre-line';
+    }
+
+
+    function appendChatHtml(){
       $('#user-chat-div').show();
       $('#user-answer').append($('#userInput').val())
       $('#user-answer').attr('id', '');
@@ -363,88 +441,6 @@
     </div>
   </div>
 `);
-
-
-
-      var url = "{{ route('get.question') }}";
-      $.ajax({
-        url: url,
-        method: "POST",
-        data: {
-          _token: '{{ csrf_token() }}',
-          'user_input': $('#userInput').val(),
-          'q_id': next_question_id,
-          'qt_count': qt_count,
-
-
-
-        },
-        cache: true,
-        success: function(data) {
-          new_count = parseInt(qt_count) + 1
-          $('#loader').hide();
-          $('#sendButton').prop('disabled', false);
-          contant = data['question_name'] + '</p>' + data['options_html'];
-          var contentArray = contant.split("</p>");
-          q_id = data['id']
-          $("#bot-question").empty();
-          if (contentArray.length > 1) {
-            contentArray.forEach(function(option, index) {
-              setTimeout(function() {
-                console.log(option)
-                $('#bot-question').append(option);
-              }, 1000 * index);
-            });
-            $("#bot-question").removeClass("blinker");
-          } else {
-            $('#bot-question').append(contant);
-
-          }
-
-
-          // $('#bot-question').append(contant);
-          // typeWriter(contant, html_contant)
-          // $('#bot-question').text(contant);
-          $('#sendButton').prop('disabled', false);
-          $('#q_id').val(q_id)
-          $('#qt_count').val(new_count)
-          $('#userInput').val('')
-       
-        
-        const element = document.getElementById('parentElement');
-        const childElement = document.getElementById('childElement');
-        element.scrollTop = childElement.offsetTop;
-
-        },
-        error: function(error) {
-          toastr.error('Something went wrong.Try again later..!', 'Failed!');
-        }
-      });
-    }
-
-
-
-
-    function typeWriter(content, html_content) {
-      var text = content;
-      var speed = 5; // Typing speed (in milliseconds)
-      var delay = 2000; // Delay between typing and erasing (in milliseconds)
-      var container = document.getElementById("bot-question");
-      var i = 0;
-      var interval = setInterval(function() {
-        if (i < text.length) {
-          container.textContent += text.charAt(i);
-          i++;
-        } else {
-          clearInterval(interval); // Stop the typing animation
-          setTimeout(function() {
-            $('#button-row').append(html_content); // Append the HTML content after the delay
-          }, delay);
-        }
-      }, speed);
-
-      // Preserve line breaks
-      container.style.whiteSpace = 'pre-line';
     }
   </script>
 

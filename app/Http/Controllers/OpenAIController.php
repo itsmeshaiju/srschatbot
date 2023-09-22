@@ -26,8 +26,6 @@ class OpenAIController extends Controller
     {
         return view('newChatWindow'); //return html file
     }
-
-
     public function newChatWindow(Request $request)
     {
         return view('newChatWindow'); //return html file
@@ -46,7 +44,7 @@ class OpenAIController extends Controller
             }
             if ($request->qt_count == $qtCount) {  //checking this is last question or not
                 $question = [
-                    'question_name' => 'Can we procceed ?',
+                    'question' => 'Can we procceed ?',
                     'options_html' => '',
                     'id' => 0
                 ]; // create response for last question befor generating srs document
@@ -86,7 +84,7 @@ class OpenAIController extends Controller
                 $mailController->sendMail($attachment, $content, $to_mail, $subject, $is_attach, $name); //call mail controller function and get return data
                 gptQuestionAnswer::where('user_id', auth()->user()->id)->delete(); //delete all question answer data after send mail 
                 $question = [
-                    'question_name' => 'we will share you pdf shortly..have a nice day',
+                    'question' => 'we will share you pdf shortly..have a nice day',
                     'options_html' => '',
                     'id' => 'shared_mail'
                 ]; // last reponse for after send registerd mail
@@ -151,29 +149,28 @@ class OpenAIController extends Controller
             $subQuestions =  $masterquestion->subQuestion;
         }else{
             $masterquestion = SubQuestion::select('*')->where('id', $id)->first();
-            $subQuestions =  $masterquestion->subQuestionList($masterquestion->id);
+            $subQuestions =  $masterquestion->subQuestionList($masterquestion->level_id,$masterquestion->id);
         }
-      
-        $options = "";
-        $options .= '<div class="row col-md-12">';
-        $i = 0;
-        foreach ($subQuestions as $q) {
-            $input_id = '#btn_row_' . $i . '_' . $id;
-            $html_id = 'btn_row_' . $i . '_' . $id;
-            $options .= '<div class="col-md-3 ml-3 mb-2 mt-2 text-center"><button class="btn btn-sm  btn-primary" id="' . $html_id . '" onclick="getButtonText(\'' . $q->id . '\',\'' . $q->question . '\',\'' . $input_id . '\')">' . ucwords($q->question) . '</button></div>';
-            $i++;
+        if($masterquestion->is_repeat == 0 && count($subQuestions) == 0 ){
+            return $this->lastQuestion($masterquestion);
         }
-        $options .= '</div>';
+        if($masterquestion->is_repeat == 1){
+            return $this->repeatQuestion($id,$masterquestion);
+        }
+
+
+            $options = $this->optionsHtml($id,$subQuestions);
             $question = [
-                'question_name' => $masterquestion->question,
+                'question' => $masterquestion->question,
                 'answer' => (isset($masterquestion->answer) ? $masterquestion->answer : ''),
                 'is_repeat' => $masterquestion->is_repeat,
+                'next_question' => "",
+                'is_last_question' => 0,
                 'options_html' => $options,
                 'id' => 0
             ]; // create response for last question befor generating srs document
             return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
     }
-
     /*
     this function for call chatgpt api and return response 
     */
@@ -238,22 +235,59 @@ class OpenAIController extends Controller
         $content = str_replace('```', " ", $content); // replace unwanted stings
         $data['choices'][0]['message']['content'] = nl2br($content); // add <br> tag
         $question = [
-            'question_name' => $data['choices'][0]['message']['content'] . '<br>  Shall we send this SRS document to your registered email ?',
+            'question' => $data['choices'][0]['message']['content'] . '<br>  Shall we send this SRS document to your registered email ?',
             'options_html' => '',
             'id' => 'send_mail'
         ]; // generate response for send mail 
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT); // return json data to view 
     }
-
-
-    public function lastQuestion(){
-
+    public function lastQuestion($masterQuestion){
+        $lastQuestion = MasterQuestion::select('*')->where('is_last_question', 1)->first();
         $question = [
-            'question_name' => $masterquestion->question,
+            'question' => $masterQuestion->question,
+            'answer' =>'',
+            'is_repeat' =>0,
+            'is_last_question' => 1,
+            'next_question' => $lastQuestion->question,
+            'options_html' => "",
+            'next_options_html' => '',
+            'id' => 0
+        ]; 
+        return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
+       
+    }
+
+    public function optionsHtml($id,$subQuestions){
+      
+        $options = "";
+        $options .= '<div class="row col-md-12">';
+        $i = 0;
+        foreach ($subQuestions as $q) {
+            
+            $input_id = '#btn_row_' . $i . '_' . $id;
+            $html_id = 'btn_row_' . $i . '_' . $id;
+            $options .= '<div class="col-md-3 ml-3 mb-2 mt-2 text-center"><button class="btn btn-sm  btn-primary" id="' . $html_id . '" onclick="getButtonText(\'' . $q->id . '\',\'' . $q->question . '\',\'' . $input_id . '\')">' . ucwords($q->question) . '</button></div>';
+            $i++;
+        }
+        $options .= '</div>';
+        return $options;
+    }
+    public function  repeatQuestion($id,$masterquestion){
+     
+        $nextMasterQuestion = SubQuestion::select('*')->where('id', $masterquestion->master_id)->first();
+        $subQuestions =  $nextMasterQuestion->subQuestionList($nextMasterQuestion->level_id,$nextMasterQuestion->id);
+        $options = $this->optionsHtml($id,$subQuestions);
+        $question = [
+            'question' => $masterquestion->question,
             'answer' => (isset($masterquestion->answer) ? $masterquestion->answer : ''),
-            'options_html' => $options,
+            'is_repeat' => $masterquestion->is_repeat,
+            'is_last_question' => 0,
+            'next_question' => $nextMasterQuestion,
+            'options_html' => "",
+            'next_options_html' => $options,
             'id' => 0
         ]; // create response for last question befor generating srs document
         return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
+
     }
 }

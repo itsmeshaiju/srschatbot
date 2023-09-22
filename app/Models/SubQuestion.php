@@ -17,9 +17,15 @@ class SubQuestion extends Model
         'master_id'
     ];  
    
-    public function subQuestionList($id)
+    public function subQuestionList($level,$id)
     {
-        return subQuestion::where('master_id',$id)->where('level_id', '!=', 1)->get();
+       
+        // if($level == 1){
+        //     return subQuestion::where('master_id',$id)->where('level_id', 1)->get();
+        // }else{
+            return subQuestion::where('master_id',$id)->where('level_id', '!=', 1)->get();
+        // }
+       
     }
 
 }

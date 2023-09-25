@@ -13,111 +13,185 @@ class SubQuestionController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * Display a listing of the sub-questions.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
     public function index(Request $request)
     {
-        $mainQuestions = MasterQuestion::whereHas('SubQuestion')->get();
-        $questions = MasterQuestion::all();
-        $levels = Level::all();
-        $page_name = 'Sub Questions';
-        return view('admin.subQuestions.index', [
-            'questions' => $questions,
-            'levels' => $levels,
-            'page_name' => $page_name,
-            'mainQuestions' => $mainQuestions, // Retrieve the filtered results
-        ]);
+        try {
+            $mainQuestions = MasterQuestion::whereHas('SubQuestion')->get();
+            $questions = MasterQuestion::all();
+            $levels = Level::all();
+            $page_name = 'Sub Questions';
+
+            return view('admin.subQuestions.index', compact('questions', 'levels', 'page_name', 'mainQuestions'));
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong!');
+        }
     }
+
+
+
+
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create(Request $request)
-
     {
+        try {
+            $page_name = 'Sub Questions';
+            $questions = MasterQuestion::all();
+            $levels = Level::all();
 
-        $page_name = 'Sub Questions';
-        $questions = MasterQuestion::all();
-        $levels = Level::all();
-        return view('admin.subQuestions.create', [
-            'page_name' => $page_name,
-            'questions' => $questions,
-            'levels' => $levels,
-        ]);
+            return view('admin.subQuestions.create', compact('page_name', 'questions', 'levels'));
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong!');
+        }
     }
+
+
+
+
+    
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        try {
+            $count = $request->input('row_count');
+            $questions = $request->input('question', []);
+            $answers = $request->input('answer', []);
+            $is_repeat = $request->input('is_repeat', []);
+            $level_id = $request->input('level');
+            $master_id = $request->input('main_question_id');
 
-        $count = $request->get('row_count');
-        $questions = $request->get('question');
-        $answers = $request->get('answer');
-        $is_repeat = $request->get('is_repeat');
-        $is_repeat = isset($is_repeat) ? $is_repeat : [];
-        $level_id = $request->get('level');
-        $master_id = $request->get('main_question_id');
+            for ($i = 0; $i < $count; $i++) {
+                $input = [
+                    'question' => $questions[$i] ?? null,
+                    'answer' => $answers[$i] ?? null,
+                    'level_id' => $level_id,
+                    'master_id' => $master_id,
+                    'is_repeat' => in_array($i, $is_repeat) ? 1 : 0,
+                ];
 
+                SubQuestion::create($input);
+            }
 
-
-        for ($i = 0; $i < $count; $i++) {
-
-            $input['question'] = $questions[$i];
-            $input['answer'] = $answers[$i];
-            $input['level_id'] = $level_id;
-            $input['master_id'] = $master_id;
-            $input['is_repeat'] = (in_array($i, $is_repeat)) ? 1 : 0;
-
-            SubQuestion::create($input);
+            return redirect()->route('subquestion.index')
+                ->with('success', 'Sub-questions created successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong!');
         }
-
-        return redirect()->route('subquestion.index');
     }
+
+
+
+
+
+
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $sub_question = SubQuestion::find($id);
-        $page_name = 'Questions';
-        return view('admin.subQuestions.show', compact('sub_question', 'page_name'));
+        try {
+            $sub_question = SubQuestion::find($id);
+            $page_name = 'Questions';
+
+            return view('admin.subQuestions.show', compact('sub_question', 'page_name'));
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong!');
+        }
     }
+
+
+
+
+
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        $question = SubQuestion::find($id);
-        $page_name = 'Sub Questions';
-        return view('admin.SubQuestions.edit', compact('question', 'page_name'));
+        try {
+            $question = SubQuestion::find($id);
+            $page_name = 'Sub Questions';
+
+            return view('admin.subQuestions.edit', compact('question', 'page_name'));
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong!');
+        }
     }
+
+
+
+
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
+        try {
+            $this->validate($request, [
+                'question' => 'required',
+            ]);
 
-        $this->validate($request, [
-            'question' => 'required',
-        ]);
+            $input = $request->all();
+            $question = SubQuestion::find($id);
 
-        $input = $request->all();
-        $question = SubQuestion::find($id);
-        $question->update($input);
-        return redirect()->route('subquestion.index')->with('success', 'Sub Question updated successfully');;
+            if ($question) {
+                $question->update($input);
+                return redirect()->route('subquestion.index')
+                    ->with('success', 'Sub Question updated successfully');
+            } else {
+                return redirect()->route('subquestion.index')
+                    ->with('error', 'Sub Question not found');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong!');
+        }
     }
+
+
+
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        SubQuestion::find($id)->delete();
-        //set actvity log here
-        return redirect()->back()
-            ->with('success', 'Sub Question deleted successfully');
+        try {
+            $question = SubQuestion::find($id);
+
+            if ($question) {
+                $question->delete();
+                return redirect()->back()
+                    ->with('success', 'Sub Question deleted successfully');
+            } else {
+                return redirect()->back()
+                    ->with('error', 'Sub Question not found');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Something went wrong!');
+        }
     }
 }

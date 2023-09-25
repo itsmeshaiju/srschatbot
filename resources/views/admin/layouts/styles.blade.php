@@ -20,3 +20,19 @@
   <link rel="stylesheet" href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css')}}">
   <!-- summernote -->
   <link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css')}}">
+  <style>
+    /* Customize the toast size */
+    .toast {
+        width: 300px;
+        /* Adjust the width as needed */
+    }
+
+    /* Customize the body size */
+    .toast-body {
+        font-size: 14px;
+        /* Adjust the font size as needed */
+        padding: 10px;
+        /* Adjust the padding as needed */
+       
+    }
+</style>

@@ -11,17 +11,21 @@ class SubQuestion extends Model
     protected $fillable = [
         'question',
         'answer',
-        'next_question_id',
         'status',
-        'main_question_id',
         'is_repeat',
         'level_id',
         'master_id'
     ];  
    
-    public function mainQuestion()
+    public function subQuestionList($level,$id)
     {
-        return $this->belongsTo(MasterQuestion::class,'main_question_id');
+       
+        // if($level == 1){
+        //     return subQuestion::where('master_id',$id)->where('level_id', 1)->get();
+        // }else{
+            return subQuestion::where('master_id',$id)->where('level_id', '!=', 1)->get();
+        // }
+       
     }
 
 }

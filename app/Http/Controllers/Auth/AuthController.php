@@ -45,9 +45,16 @@ class AuthController extends Controller
         ]); // Filed validation
    
         $credentials = $request->only('email', 'password');
+        
         if (Auth::attempt($credentials)) {
-            return redirect('/')
-                        ->withSuccess('You have Successfully loggedin'); //Login when entered details are correct
+            if(Auth::user()->is_admin==1){
+                return redirect()->route('admin.index')
+                ->withSuccess('You have Successfully loggedin'); //Login when entered details are correct
+            }else{
+                return redirect('/')
+                ->withSuccess('You have Successfully loggedin'); //Login when entered details are correct
+            }
+          
         }
   
         return redirect("/")->withSuccess('Oppes! You have entered invalid credentials'); //Return error message when enetred incorrect details

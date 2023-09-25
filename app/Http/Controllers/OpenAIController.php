@@ -24,215 +24,321 @@ class OpenAIController extends Controller
 {
     public function index(Request $request) // show chat window 
     {
-        return view('chatWindow'); //return html file
+        return view('endUser.chatWindow'); //return html file
     }
+
+
+
+    
 
     public function getQuestions(Request $request)
     {
-
-
-
-        // dd($request->q_id);
-        if (isset($request->q_id) && $request->q_id == 'send_mail') { //checking next request is send mail or not
-            $text =  date("ymdhis") . Auth::user()->id; //generated pdf name make unique
-            // $text = Hash::make($text); //text hashing or text  convert to a  specific code 
-            $name = "SRSDocument_" . $text . ".pdf"; //pdf name 
-            $pdfController = new PdfController(); //call pdf controller 
-            $attachment = $pdfController->generatePDF($name); //call pdf controller function and get return data
-            $mailController = new MailController(); // call mail controller 
-            $content = 'Hi ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day!';
-            $to_mail = auth::user()->email;
-            $subject = 'SRS Document';
-            $is_attach = true;
-            $mailController->sendMail($attachment, $content, $to_mail, $subject, $is_attach, $name); //call mail controller function and get return data
-            gptQuestionAnswer::where('user_id', auth()->user()->id)->delete(); //delete all question answer data after send mail 
+        try {
+            // Check if the request is for sending an email
+            if (isset($request->q_id) && $request->q_id == 'send_mail') {
+                // Generate a unique PDF name
+                $pdfName = "SRSDocument_" . date("ymdhis") . Auth::user()->id . ".pdf";
+    
+                // Create an instance of the PdfController
+                $pdfController = new PdfController();
+    
+                // Generate the PDF and get the attachment
+                $attachment = $pdfController->generatePDF($pdfName);
+    
+                // Create an instance of the MailController
+                $mailController = new MailController();
+    
+                // Compose email content
+                $content = 'Hi ' . Auth::user()->name . ', Please find the attached SRS Document along with the mail. Have a nice day!';
+                $toMail = Auth::user()->email;
+                $subject = 'SRS Document';
+                $isAttach = true;
+    
+                // Send the email with the attachment
+                $mailController->sendMail($attachment, $content, $toMail, $subject, $isAttach, $pdfName);
+    
+                // Delete all question answer data after sending the email
+                gptQuestionAnswer::where('user_id', auth()->user()->id)->delete();
+    
+                // Prepare a response for the last step
+                $question = [
+                    'question' => 'We will share your PDF shortly. Have a nice day!',
+                    'answer' => '',
+                    'is_repeat' => 0,
+                    'next_question' => "",
+                    'is_last_question' => 0,
+                    'options_html' => "",
+                    'id' => 0
+                ];
+    
+                // Return the response as JSON
+                return response()->json($question, 200, [], JSON_PRETTY_PRINT);
+            }
+    
+            // Check if user_answer and chat_question are provided in the request
+            if (!empty($request->user_answer) && !empty($request->chat_question)) {
+                $data = [
+                    'answer' => $request->user_answer,
+                    'question' => $request->chat_question,
+                ];
+    
+                // Convert data to JSON
+                $json_data = json_encode($data);
+    
+                // Insert question and answer data into the database
+                gptQuestionAnswer::create([
+                    'question_and_answer' => $json_data,
+                    'options_html' => '',
+                    'user_id' => auth()->user()->id,
+                ]);
+            }
+    
+            // Determine the question based on the request
+            $id = isset($request->q_id) ? $request->q_id : 0;
+    
+            if ($id == 0) {
+                // Fetch the first master question
+                $masterQuestion = MasterQuestion::where('is_first_question', 1)->first();
+                $masterQuestion->is_repeat = 0;
+                $subQuestions = $masterQuestion->subQuestion;
+            } else {
+                // Fetch a subquestion by ID
+                $masterQuestion = SubQuestion::find($id);
+                $subQuestions = $masterQuestion->subQuestionList($masterQuestion->level_id, $masterQuestion->id);
+            }
+    
+            // Handle repeated or last questions
+            if ($masterQuestion->is_repeat == 1) {
+                return $this->repeatQuestion($id, $masterQuestion);
+            } elseif ($masterQuestion->is_repeat == 0 && count($subQuestions) == 0) {
+                return $this->lastQuestion($masterQuestion);
+            }
+    
+            // Generate options HTML
+            $options = $this->optionsHtml($id, $masterQuestion->question, $subQuestions);
+    
+            // Prepare the question response
             $question = [
-                'question' => 'we will share you pdf shortly..have a nice day',
-                'answer' => '',
-                'is_repeat' => 0,
+                'question' => $masterQuestion->question,
+                'answer' => isset($masterQuestion->answer) ? $masterQuestion->answer : '',
+                'is_repeat' => $masterQuestion->is_repeat,
                 'next_question' => "",
                 'is_last_question' => 0,
-                'options_html' => "",
+                'options_html' => $options,
                 'id' => 0
-            ]; // last reponse for after send registerd mail
-            return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
+            ];
+    
+            // Return the question response as JSON
+            return response()->json($question, 200, [], JSON_PRETTY_PRINT);
+        } catch (Exception $e) {
+            // Handle exceptions here, log them, or return an error response
+            return response()->json(['error' => 'Something went wrong!'], 500);
         }
-
-
-        //=========================
-        if (!empty($request->user_answer) && !empty($request->chat_question)) {
-            $data = [
-                'answer' => $request->user_answer,
-                'question' => $request->chat_question,
-
-            ]; // set ask question and answer to array active
-            $json_data = json_encode($data); // convert to json 
-            $res =  gptQuestionAnswer::create([
-                'question_and_answer' => $json_data,
-                'options_html' => '',
-                'user_id' => auth()->user()->id,
-            ]); // insert to json data and logged user id  to table 
-        }
-
-
-
-
-        $id = (isset($request->q_id) ? $request->q_id  : 0);
-
-        if ($id == 0) {
-            $masterquestion = MasterQuestion::select('*')->where('is_first_question', 1)->first();
-            $masterquestion->is_repeat = 0;
-            $subQuestions =  $masterquestion->subQuestion;
-        } else {
-            $masterquestion = SubQuestion::select('*')->where('id', $id)->first();
-            $subQuestions =  $masterquestion->subQuestionList($masterquestion->level_id, $masterquestion->id);
-        }
-
-        if ($masterquestion->is_repeat == 1) {
-            return $this->repeatQuestion($id, $masterquestion);
-        }
-        if ($masterquestion->is_repeat == 0 && count($subQuestions) == 0) {
-
-            return $this->lastQuestion($masterquestion);
-        }
-
-
-
-        $options = $this->optionsHtml($id, $masterquestion->question, $subQuestions);
-        $question = [
-            'question' => $masterquestion->question,
-            'answer' => (isset($masterquestion->answer) ? $masterquestion->answer : ''),
-            'is_repeat' => $masterquestion->is_repeat,
-            'next_question' => "",
-            'is_last_question' => 0,
-            'options_html' => $options,
-            'id' => 0
-        ]; // create response for last question befor generating srs document
-        return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
     }
-    /*
-    this function for call chatgpt api and return response 
-    */
+    
+
+
+
+
+
+
+
+    
+    //this function for call chatgpt api and return response 
+    
     public function chatGpt()
     {
-        $qtArray = gptQuestionAnswer::select('question_and_answer')->where('user_id', auth()->user()->id)->orderBy('id')->get(); //get all logged  user  asked questions and answers
-        if (empty($qtArray)) {
-            throw new Exception("Questions and answers  are empty");
-        }
-        $content = "";
-        foreach ($qtArray as $data) {
-            $data = json_decode($data->question_and_answer, TRUE);
-            $content .= $data['answer'] . ' ' . $data['question'];
-        } // all questions and answers  convert to string 
-        $content .= '  create detailed description of  srs document'; // add text on for srs document creation 
-        $client = new Client([
-            'curl' => [
-                CURLOPT_CAINFO => base_path('resources/assets/cacert.pem')  // Fix SSL certificate problem
-            ]
-        ]);
-        // Send a POST request to the OpenAI API
-        $response = $client->post("https://api.openai.com/v1/chat/completions", [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-            ], //set api header issue ' env('OPENAI_API_KEY')' this data will get .env file 
-
-            'json' => [
-                "model" => "gpt-3.5-turbo",  //chat gpt model engine
-                'messages' => [
-                    [
-                        "role" => "user", //set role as user
-                        "content" => $content   //pass question and asnwer string is there 
-                    ]
+        try {
+            // Retrieve all the user's asked questions and answers
+            $qtArray = gptQuestionAnswer::select('question_and_answer')
+                ->where('user_id', auth()->user()->id)
+                ->orderBy('id')
+                ->get();
+    
+            // Check if there are any questions and answers
+            if (empty($qtArray)) {
+                throw new Exception("Questions and answers are empty");
+            }
+    
+            $content = "";
+            foreach ($qtArray as $data) {
+                $data = json_decode($data->question_and_answer, TRUE);
+                $content .= $data['answer'] . ' ' . $data['question'];
+            }
+    
+            // Add text for SRS document creation
+            $content .= '  create a detailed description of the SRS document';
+    
+            // Initialize a Guzzle HTTP client with SSL certificate fix
+            $client = new Client([
+                'curl' => [
+                    CURLOPT_CAINFO => base_path('resources/assets/cacert.pem')  // Fix SSL certificate problem
+                ]
+            ]);
+    
+            // Send a POST request to the OpenAI API
+            $response = $client->post("https://api.openai.com/v1/chat/completions", [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 ],
-                'temperature' => 0.5, //It controls the randomness of the generated text  0.5 makes the output more random and creative
-                'max_tokens' => 2048, // It sets the maximum number of tokens in the response. 
-                'top_p' => 1, //This parameter controls the diversity of the generated text by limiting the set of tokens considered for each step
-                'frequency_penalty' => 0, // discourage repetitive responses
-                'presence_penalty' => 0, //discourage the model from making stuff up
-            ]
-        ]);
-        $data = json_decode($response->getBody(), true); //convert response to array
-        $content = $data['choices'][0]['message']['content']; //take response text only
-        if (strlen($content) < 5) {
-            throw new Exception("response data is empty");
+                'json' => [
+                    "model" => "gpt-3.5-turbo",  // Chat GPT model engine
+                    'messages' => [
+                        [
+                            "role" => "user", // Set role as user
+                            "content" => $content   // Pass question and answer string
+                        ]
+                    ],
+                    'temperature' => 0.5, // Control the randomness of generated text
+                    'max_tokens' => 2048, // Set the maximum number of tokens in the response
+                    'top_p' => 1, // Control text diversity
+                    'frequency_penalty' => 0, // Discourage repetitive responses
+                    'presence_penalty' => 0, // Discourage the model from making things up
+                ]
+            ]);
+    
+            // Parse the API response
+            $data = json_decode($response->getBody(), true);
+    
+            // Extract the response text
+            $content = $data['choices'][0]['message']['content'];
+    
+            // Check if the response is empty
+            if (strlen($content) < 5) {
+                throw new Exception("Response data is empty");
+            }
+    
+            // Prepare the GPT answer
+            $data = [
+                'question' => 'create SRS document',
+                'answer' => $content
+            ];
+    
+            // Convert data to JSON
+            $json_data = json_encode($data);
+    
+            // Save the GPT response to the table
+            $res = gptQuestionAnswer::create([
+                'question_and_answer' => $json_data,
+                'user_id' => auth()->user()->id,
+            ]);
+    
+            // Check if the response was saved successfully
+            if (!isset($res->id)) {
+                throw new Exception("Server error");
+            }
+    
+            // Replace unwanted strings
+            $content = str_replace('```', " ", $content);
+    
+            // Add <br> tags for line breaks
+            $data['choices'][0]['message']['content'] = nl2br($content);
+    
+            // Generate a response for sending an email
+            $res = [
+                'gpt_report' => $data['choices'][0]['message']['content'] . '<br>  Shall we send this SRS document to your registered email ?',
+            ];
+    
+            // Return the response
+            return $res;
+        } catch (Exception $e) {
+            // Handle exceptions here, log them, or return an error response
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $data = [
-            'question' => 'create srs document',
-            'answer' => $content
-        ]; // Prepare gpt answer to array 
-
-        $json_data = json_encode($data); // convert to json
-        $res = gptQuestionAnswer::create([
-            'question_and_answer' => $json_data,
-            'user_id' => auth()->user()->id,
-        ]); //save gpt response to table 
-        if (isset($res->id) == false) {
-            throw new Exception("server error ");
-        }
-        $content = str_replace('```', " ", $content); // replace unwanted stings
-        $data['choices'][0]['message']['content'] = nl2br($content); // add <br> tag
-        $res = [
-            'gpt_report' => $data['choices'][0]['message']['content'] . '<br>  Shall we send this SRS document to your registered email ?',
-
-        ]; // generate response for send mail 
-        return $res; // return json data to view 
     }
+
+
+
+
+
+
+
+
+    //fetch last question
     public function lastQuestion($masterQuestion)
-    {
+{
+    // Get the GPT-generated answer
+    $gpt_answer = $this->chatGpt();
+
+    // Fetch the last question from the database
+    $lastQuestion = MasterQuestion::select('*')->where('is_last_question', 1)->first();
+
+    // Prepare the response
+    $gpt_res['question'] = $gpt_answer['gpt_report'];
+    $question = [
+        'question' => $lastQuestion->question,
+        'answer' => '',
+        'is_repeat' => 1,
+        'is_last_question' => 1,
+        'next_question' => $gpt_res,
+        'options_html' => "",
+        'next_options_html' => '',
+        'id' => 'send_mail'
+    ];
+
+    // Return the response as JSON
+    return response()->json($question, 200, [], JSON_PRETTY_PRINT);
+}
 
 
-        $gpt_answer = $this->chatGpt();
-        $lastQuestion = MasterQuestion::select('*')->where('is_last_question', 1)->first();
-        $gpt_res['question'] = $gpt_answer['gpt_report'];
-        $question = [
-            'question' => $lastQuestion->question,
-            'answer' => '',
-            'is_repeat' => 1,
-            'is_last_question' => 1,
-            'next_question' => $gpt_res,
-            'options_html' => "",
-            'next_options_html' => '',
-            'id' => 'send_mail'
-        ];
-        return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
 
+
+
+
+
+//append options button
+public function optionsHtml($id, $masterQuestion, $subQuestions)
+{
+    $options = '<div class="row col-md-12 d-flex justify-content-center">';
+    $i = 0;
+
+    foreach ($subQuestions as $q) {
+        $inputId = '#btn_row_' . $i . '_' . $id;
+        $htmlId = 'btn_row_' . $i . '_' . $id;
+        $options .= '<div class="col-md-3 ml-3 mb-2 mt-2 text-center">';
+        $options .= '<button class="btn-sm btn btn-outline-primary" id="' . $htmlId . '" ';
+        $options .= 'onclick="getButtonText( \'' . $q->id . '\',\'' . $masterQuestion . '\',\'' . $q->question . '\',\'' . $inputId . '\')">';
+        $options .= ucwords($q->question);
+        $options .= '</button></div>';
+        $i++;
     }
 
-    public function optionsHtml($id, $masterquestion, $subQuestions)
-    {
+    $options .= '</div>';
+    return $options;
+}
 
-        $options = "";
-        $options .= '<div class="row col-md-12 d-flex justify-content-center">';
-        $i = 0;
-        foreach ($subQuestions as $q) {
 
-            $input_id = '#btn_row_' . $i . '_' . $id;
-            $html_id = 'btn_row_' . $i . '_' . $id;
-            $options .= '<div class="col-md-3 ml-3 mb-2 mt-2 text-center"><button class="btn-sm btn btn-outline-primary" id="' . $html_id . '" onclick="getButtonText( \'' . $q->id . '\',\'' . $masterquestion . '\',\'' . $q->question . '\',\'' . $input_id . '\')">' . ucwords($q->question) . '</button></div>';
-            $i++;
-        }
-        $options .= '</div>';
-        return $options;
-    }
-    public function  repeatQuestion($id, $masterquestion)
-    {
 
-        $nextMasterQuestion = SubQuestion::select('*')->where('id', $masterquestion->master_id)->first();
-        $subQuestions =  $nextMasterQuestion->subQuestionList($nextMasterQuestion->level_id, $nextMasterQuestion->id);
-        $options = $this->optionsHtml($id, $masterquestion->question, $subQuestions);
-        $question = [
-            'question' => $masterquestion->question,
-            'answer' => (isset($masterquestion->answer) ? $masterquestion->answer : ''),
-            'is_repeat' => $masterquestion->is_repeat,
-            'is_last_question' => 0,
-            'next_question' => $nextMasterQuestion,
-            'options_html' => "",
-            'next_options_html' => $options,
-            'id' => 0
-        ]; // create response for last question befor generating srs document
-        return response()->json($question, 200, array(), JSON_PRETTY_PRINT); //return json data
 
-    }
+
+
+//fetch  repeat question
+public function repeatQuestion($id, $masterQuestion)
+{
+    // Fetch the next master question based on the current master question's relationship
+    $nextMasterQuestion = SubQuestion::select('*')->where('id', $masterQuestion->master_id)->first();
+
+    // Retrieve subquestions related to the next master question
+    $subQuestions = $nextMasterQuestion->subQuestionList($nextMasterQuestion->level_id, $nextMasterQuestion->id);
+
+    // Generate HTML options for subquestions
+    $options = $this->optionsHtml($id, $masterQuestion->question, $subQuestions);
+
+    // Prepare the response
+    $question = [
+        'question' => $masterQuestion->question,
+        'answer' => (isset($masterQuestion->answer) ? $masterQuestion->answer : ''),
+        'is_repeat' => $masterQuestion->is_repeat,
+        'is_last_question' => 0,
+        'next_question' => $nextMasterQuestion,
+        'options_html' => "",
+        'next_options_html' => $options,
+        'id' => 0
+    ];
+
+    // Return the response as JSON
+    return response()->json($question, 200, [], JSON_PRETTY_PRINT);
+}
+
 }

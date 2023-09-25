@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
 
 //admin route
     Route::middleware('is.admin')->prefix('admin')->group(function () {
-        Route::get('/', [QuestionController::class, 'index'])->name('admin.index'); // Admin dashboard
+        Route::get('/', [QuestionController::class, 'index'])->name('admin.index'); 
         Route::resource('question', QuestionController::class);
         Route::post('first-question-status', [QuestionController::class, 'updateFirstQuestion'])->name('update.first.question');
         Route::post('last-question-status', [QuestionController::class, 'updateLastQuestion'])->name('update.last.question');

@@ -204,13 +204,13 @@ class OpenAIController extends Controller
     {
 
         $options = "";
-        $options .= '<div class="row col-md-12">';
+        $options .= '<div class="row col-md-12 d-flex justify-content-center">';
         $i = 0;
         foreach ($subQuestions as $q) {
 
             $input_id = '#btn_row_' . $i . '_' . $id;
             $html_id = 'btn_row_' . $i . '_' . $id;
-            $options .= '<div class="col-md-3 ml-3 mb-2 mt-2 text-center"><button class="btn btn-sm  btn-primary" id="' . $html_id . '" onclick="getButtonText( \'' . $q->id . '\',\'' . $masterquestion . '\',\'' . $q->question . '\',\'' . $input_id . '\')">' . ucwords($q->question) . '</button></div>';
+            $options .= '<div class="col-md-3 ml-3 mb-2 mt-2 text-center"><button class="btn-sm btn btn-outline-primary" id="' . $html_id . '" onclick="getButtonText( \'' . $q->id . '\',\'' . $masterquestion . '\',\'' . $q->question . '\',\'' . $input_id . '\')">' . ucwords($q->question) . '</button></div>';
             $i++;
         }
         $options .= '</div>';

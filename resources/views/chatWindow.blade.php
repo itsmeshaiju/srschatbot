@@ -333,7 +333,7 @@
     function getButtonText(next_question_id,master_question,question,html_id) {
       repeat_flag = 0;
       $('#userInput').val(question);
-      $(html_id).addClass('btn-secondary').removeClass('btn-success');
+      $(html_id).addClass('btn-outline-success').removeClass('btn-outline-primary');
      
       getChatReplay(next_question_id,master_question,question);
     }

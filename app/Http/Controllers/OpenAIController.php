@@ -124,7 +124,7 @@ class OpenAIController extends Controller
             $data = json_decode($data->question_and_answer, TRUE);
             $content .= $data['answer'] . ' ' . $data['question'];
         } // all questions and answers  convert to string 
-        $content .= '  create srs document'; // add text on for srs document creation 
+        $content .= '  create detailed description of  srs document'; // add text on for srs document creation 
         $client = new Client([
             'curl' => [
                 CURLOPT_CAINFO => base_path('resources/assets/cacert.pem')  // Fix SSL certificate problem

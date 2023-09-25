@@ -320,6 +320,7 @@
     const sendButton = document.getElementById("sendButton");
     var repeatedData = []; 
     var send_mail_flag = 0;
+    var repeat_flag = 0;
     // Event listener for send button click
     $("#userInput").on('keyup', function(e) {
 
@@ -330,6 +331,7 @@
 
 
     function getButtonText(next_question_id,master_question,question,html_id) {
+      repeat_flag = 0;
       $('#userInput').val(question);
       $(html_id).addClass('btn-secondary').removeClass('btn-success');
      
@@ -357,10 +359,10 @@
         },
         cache: true,
         success: function(data) {
-         
+        
           addChatData(data['id'],data['question'], data['answer'],data['options_html']);
           if(data['is_repeat'] == 1){
-            
+            repeat_flag = 1;
             appendChatHtml();
              if (data['is_last_question'] == 1) {
               send_mail_flag = 1;
@@ -412,7 +414,11 @@
 
 
     function appendChatHtml(){
-      $('#user-chat-div').show();
+
+      if(repeat_flag == 0){
+        $('#user-chat-div').show();
+      }
+    
       $('#user-answer').append($('#userInput').val())
       $('#user-answer').attr('id', '');
       $('#bot-question').attr('id', '');

@@ -61,7 +61,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <strong>Answer:</strong>
-                    {!! Form::text('answer', null, array('placeholder' => 'Answer','class' => 'form-control')) !!}
+                    {!! Form::textarea('answer', null, array('placeholder' => 'Answer','class' => 'form-control')) !!}
                 </div>
             </div>
             </div>

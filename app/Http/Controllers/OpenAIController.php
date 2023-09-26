@@ -260,7 +260,7 @@ class OpenAIController extends Controller
 {
     // Get the GPT-generated answer
     $gpt_answer = $this->chatGpt();
-
+   // dd($gpt_answer);
     // Fetch the last question from the database
     $lastQuestion = MasterQuestion::select('*')->where('is_last_question', 1)->first();
 

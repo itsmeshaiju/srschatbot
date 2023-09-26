@@ -111,12 +111,11 @@
 
                             <div class="col-md-12 row multi-field">
                                 <div class="col-md-3">
-                                    <input id="filter_question" placeholder="Sub Question" required=""
+                                    <input  placeholder="Sub Question" required=""
                                         class="form-control mt-2" name="question[]" type="text" value="" required>
                                 </div>
                                 <div class="col-md-3">
-                                    <input id="filter_question" placeholder="Answer" required=""
-                                        class="form-control mt-2" name="answer[]" type="text" value="" required>
+                                    <textarea  placeholder="Answer" required class="form-control mt-2" name="answer[]" required></textarea>
                                 </div>
 
                                 <div class="col-md-2 mt-3">

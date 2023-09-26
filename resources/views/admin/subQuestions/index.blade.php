@@ -128,6 +128,7 @@
 
 @section('scripts')
     <script>
+         var csrf =  '{{ csrf_token() }}';
         function getQuestion() {
 
             dynamicSelectFunction();
@@ -162,6 +163,7 @@
             count = count - 1;
             last_html_id = '#main_question_id_' + count;
             last_option_val = $(last_html_id).val();
+            
             $('#main_question_id').val(last_option_val);
             //==========================
             html_id = '#main_question_id_' + id;
@@ -211,7 +213,8 @@
                         var deleteHtml = "";
                         if(qt.is_sub_qt == 0 ){
                              deleteHtml = `<hr><form action="`+deleteUrl+`" method="POST">
-                                                    <input type="hidden" name="_method" value="DELETE">                                                    <input type="hidden" name="_token" value="7AN6LzXwxn5gFilDjc49zCf9CofB1LkNi2KVFYrQ">                                                    <button type="submit" class="btn btn-dangers">
+                                <input type="hidden" name="_method" value="DELETE">
+                                                 <input type="hidden" name="_token" value="`+csrf+`">                                                    <button type="submit" class="btn btn-dangers">
                                                         <i class="fa fa-fw fa-trash"></i>Delete
                                                     </button>
                                                 </form>`;

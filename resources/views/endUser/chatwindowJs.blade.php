@@ -75,6 +75,12 @@
                         $("#sendButton").prop("disabled", false);
                     }
 
+                    if(send_mail_flag == 1){
+                        setTimeout(function() {
+                            window.location.reload();
+                    }, 4000);
+                    }
+
                 },
                 error: function(error) {
                     toastr.error('Something went wrong.Try again later..!', 'Failed!');

@@ -178,6 +178,7 @@ class SubQuestionController extends Controller
      */
     public function destroy(string $id)
     {
+       
         try {
             $question = SubQuestion::find($id);
 
@@ -190,6 +191,7 @@ class SubQuestionController extends Controller
                     ->with('error', 'Sub Question not found');
             }
         } catch (\Exception $e) {
+          
             return redirect()->back()
                 ->with('error', 'Something went wrong!');
         }

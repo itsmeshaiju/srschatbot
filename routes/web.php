@@ -9,12 +9,12 @@ use App\Http\Controllers\OpenAIController;
 
 
 //auth route
-Route::middleware('guest')->group(function () {
+// Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'index'])->name('login'); // Show login page
     Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post'); // Login users
     Route::get('registration', [AuthController::class, 'registration'])->name('register'); // Show registration page
     Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post'); // User registration
-});
+//});
 
 
 //public route
